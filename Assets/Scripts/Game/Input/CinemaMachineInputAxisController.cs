@@ -5,29 +5,24 @@ namespace Game.Input
 {
     public class CinemaMachineInputAxisController : MonoBehaviour
     {
+        private const string MouseX = "Mouse X";
+        private const string MouseY = "Mouse Y";
+        
         private void Start()
         {
             CinemachineCore.GetInputAxis = GetAxisCustom;
         }
         
-        public float GetAxisCustom(string axisName)
+        private float GetAxisCustom(string axisName)
         {
-            if(axisName == "Mouse X")
+            return axisName switch
             {
-                if (UnityEngine.Input.GetMouseButton(0))
-                    return UnityEngine.Input.GetAxis("Mouse X");
-                
-                return 0;
-            } 
-                
-            if (axisName == "Mouse Y")
-            {
-                if (UnityEngine.Input.GetMouseButton(0))
-                    return UnityEngine.Input.GetAxis("Mouse Y");
-                return 0;
-            }
-                
-            return UnityEngine.Input.GetAxis(axisName);
+                MouseX when UnityEngine.Input.GetMouseButton(0) => UnityEngine.Input.GetAxis(MouseX),
+                MouseX => 0,
+                MouseY when UnityEngine.Input.GetMouseButton(0) => UnityEngine.Input.GetAxis(MouseY),
+                MouseY => 0,
+                _ => UnityEngine.Input.GetAxis(axisName)
+            };
         }
     }
 }

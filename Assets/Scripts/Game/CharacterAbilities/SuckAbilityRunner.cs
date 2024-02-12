@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Game.CharacterAbilities
@@ -10,6 +11,8 @@ namespace Game.CharacterAbilities
         [SerializeField] private float _suckingStrength;
         [SerializeField] private float _minDistanceToPickUp;
         [SerializeField] private float _spitingStrength;
+        [SerializeField] private float _maxSpitDistance;
+        
 
         private bool _enabled;
         private Rigidbody _suckedObject;
@@ -85,7 +88,44 @@ namespace Game.CharacterAbilities
         {
             rigidbody.transform.position = transform.position + _characterTransform.forward;
             rigidbody.gameObject.SetActive(true);
-            rigidbody.AddForce(_characterTransform.forward * _spitingStrength, ForceMode.Acceleration);
+            var targetPosition = CalculateTargetPosition();
+            var force = CalculateForce(targetPosition);
+            rigidbody.AddForce(force, ForceMode.VelocityChange);
+        }
+
+        private Vector3 CalculateTargetPosition()
+        {
+            var screenCenter = new Vector3(Screen.width >> 1, Screen.height >> 1, 0);
+            var ray = Camera.main.ScreenPointToRay(screenCenter);
+
+            if (Physics.Raycast(ray, out var hitInfo, _maxSpitDistance))
+            {
+                return hitInfo.point;
+            }
+
+            return transform.position + transform.forward * _maxSpitDistance;
+        }
+        
+        private Vector3 CalculateForce(Vector3 targetPosition)
+        {
+            // Розрахунок необхідних параметрів для досягнення цільової позиції
+
+            Vector3 initialPosition = transform.position;
+            Vector3 displacement = targetPosition - initialPosition;
+            var gravity = Math.Abs(Physics.gravity.y);
+            // Вирахування часу, який потрібен об'єкту, щоб долетіти до цільової позиції
+            // Використовуємо формулу для рівномірного прискореного руху: d = v0*t + (1/2)*a*t^2
+            // Де d - відстань, яку потрібно подолати, a - прискорення (гравітація), t - час, v0 - початкова швидкість
+            float time = Mathf.Sqrt(2 * (displacement.magnitude / gravity));
+            float verticalVelocity = gravity * time;
+
+            // Розрахунок початкової швидкості по горизонталі
+            Vector3 horizontalVelocity = displacement / time;
+
+            // Застосування сили до Rigidbody
+            Vector3 force = horizontalVelocity;
+            force.y = verticalVelocity;
+            return force;
         }
     }
 }
