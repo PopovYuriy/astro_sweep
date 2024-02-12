@@ -195,6 +195,7 @@ MonoBehaviour:
   _suckingStrength: 5
   _minDistanceToPickUp: 0.5
   _spitingStrength: 300
+  _maxSpitDistance: 1
 --- !u!65 &2299200987580444294
 BoxCollider:
   m_ObjectHideFlags: 0
