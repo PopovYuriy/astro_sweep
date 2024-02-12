@@ -1,5 +1,9 @@
 using System;
+using Core.GameSystems.InventorySystem;
+using Core.GameSystems.InventorySystem.Enums;
+using Game.Environment.InteractiveItems;
 using UnityEngine;
+using Zenject;
 
 namespace Game.CharacterAbilities
 {
@@ -12,11 +16,12 @@ namespace Game.CharacterAbilities
         [SerializeField] private float _minDistanceToPickUp;
         [SerializeField] private float _spitingStrength;
         [SerializeField] private float _maxSpitDistance;
-        
 
         private bool _enabled;
-        private Rigidbody _suckedObject;
-        private Rigidbody _objectToSuck;
+        private SuckableItem _suckedObject;
+        private SuckableItem _objectToSuck;
+
+        [Inject] private InventorySystem _inventorySystem;
 
         private void Start()
         {
@@ -27,11 +32,18 @@ namespace Game.CharacterAbilities
         {
             if (UnityEngine.Input.GetKey(KeyCode.E))
             {
-                _enabled = !_enabled;
-                if (_enabled)
-                    Run();
+                if (_inventorySystem.GetInventoryContainer(ItemCollectionType.Throwable).HasFreeSpace)
+                {
+                    _enabled = !_enabled;
+                    if (_enabled)
+                        Run();
+                    else
+                        Stop();
+                }
                 else
-                    Stop();
+                {
+                    Debug.Log("No space in the inventory.");
+                }
             }
 
             if (UnityEngine.Input.GetKey(KeyCode.Space) && _suckedObject != null)
@@ -55,42 +67,47 @@ namespace Game.CharacterAbilities
 
         private void OnTriggerEnter(Collider other)
         {
-            _objectToSuck = other.GetComponent<Rigidbody>();
+            if (other.TryGetComponent(out SuckableItem item) && item.Data.CollectionType == ItemCollectionType.Throwable)
+            {
+                _objectToSuck = item;
+            }
         }
         
         private void OnTriggerExit(Collider other)
         {
-            var rigidBody = other.GetComponent<Rigidbody>();
-            if (rigidBody == _objectToSuck)
+            if (other.TryGetComponent(out InventoryItem item) && item == _objectToSuck)
+            {
                 _objectToSuck = null;
+            }
         }
 
-        private void Suck(Rigidbody rigidbody)
+        private void Suck(SuckableItem item)
         {
-            var forceDirection = (transform.position - rigidbody.transform.position).normalized;
-            var distance = Vector3.Distance(transform.position, rigidbody.transform.position);
+            var forceDirection = (transform.position - item.transform.position).normalized;
+            var distance = Vector3.Distance(transform.position, item.transform.position);
 
             if (distance < _minDistanceToPickUp)
             {
                 _objectToSuck.gameObject.SetActive(false);
                 _suckedObject = _objectToSuck;
                 _objectToSuck = null;
+                _inventorySystem.GetInventoryContainer(_suckedObject.Data.CollectionType).TryAddItem(_suckedObject.Data);
                 Stop();
             }
             else
             {
                 var force = forceDirection * (_suckingStrength / distance);
-                _objectToSuck.AddForce(force, ForceMode.Acceleration);   
+                item.Rigidbody.AddForce(force, ForceMode.Acceleration);   
             }
         }
 
-        private void Spit(Rigidbody rigidbody)
+        private void Spit(SuckableItem rigidbody)
         {
             rigidbody.transform.position = transform.position + _characterTransform.forward;
             rigidbody.gameObject.SetActive(true);
             var targetPosition = CalculateTargetPosition();
             var force = CalculateForce(targetPosition);
-            rigidbody.AddForce(force, ForceMode.VelocityChange);
+            rigidbody.Rigidbody.AddForce(force, ForceMode.VelocityChange);
         }
 
         private Vector3 CalculateTargetPosition()
