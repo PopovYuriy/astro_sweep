@@ -5,12 +5,11 @@ using Game.Environment.InteractiveItems;
 using UnityEngine;
 using Zenject;
 
-namespace Game.CharacterAbilities
+namespace Game.MainCharacter.Abilities
 {
-    public sealed class SuckAbilityRunner : MonoBehaviour
+    public sealed class VacuumAbilityRunner : AbilityRunnerAbstract
     {
         [SerializeField] private Transform _characterTransform;
-        [SerializeField] private ParticleSystem _particleSystem;
         [SerializeField] private Collider _collider;
         [SerializeField] private float _suckingStrength;
         [SerializeField] private float _minDistanceToPickUp;
@@ -21,47 +20,20 @@ namespace Game.CharacterAbilities
         private SuckableItem _suckedObject;
         private SuckableItem _objectToSuck;
 
-        [Inject] private InventorySystem _inventorySystem;
+        [Inject] private CharacterInventorySystem _characterInventorySystem;
 
         private void Start()
         {
             Stop();
         }
 
-        private void Update()
+        public override void Run()
         {
-            if (UnityEngine.Input.GetKey(KeyCode.E))
-            {
-                if (_inventorySystem.GetInventoryContainer(ItemCollectionType.Throwable).HasFreeSpace)
-                {
-                    _enabled = !_enabled;
-                    if (_enabled)
-                        Run();
-                    else
-                        Stop();
-                }
-                else
-                {
-                    Debug.Log("No space in the inventory.");
-                }
-            }
-
-            if (UnityEngine.Input.GetKey(KeyCode.Space) && _suckedObject != null)
-                Spit(_suckedObject);
-
-            if (_objectToSuck != null)
-                Suck(_objectToSuck);
-        }
-
-        public void Run()
-        {
-            _particleSystem.Play();
             _collider.enabled = true;
         }
 
-        public void Stop()
+        public override void Stop()
         {
-            _particleSystem.Stop();
             _collider.enabled = false;
         }
 
@@ -91,7 +63,7 @@ namespace Game.CharacterAbilities
                 _objectToSuck.gameObject.SetActive(false);
                 _suckedObject = _objectToSuck;
                 _objectToSuck = null;
-                _inventorySystem.GetInventoryContainer(_suckedObject.Data.CollectionType).TryAddItem(_suckedObject.Data);
+                _characterInventorySystem.GetInventoryContainer(_suckedObject.Data.CollectionType).TryAddItem(_suckedObject.Data);
                 Stop();
             }
             else

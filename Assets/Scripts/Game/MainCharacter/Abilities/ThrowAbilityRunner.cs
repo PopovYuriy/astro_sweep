@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Game.CharacterAbilities
+namespace Game.MainCharacter.Abilities
 {
-    public sealed class SpitAbilityRunner : MonoBehaviour
+    public sealed class ThrowAbilityRunner : AbilityRunnerAbstract
     {
         [SerializeField] private Rigidbody _objectPrefab;
         [SerializeField] [Range(1, 100)] private float _throwStrength = 10f;
@@ -13,5 +13,15 @@ namespace Game.CharacterAbilities
         [SerializeField] [Range(0.01f, 0.25f)] private float _timeBetweenPoints = 0.1f;
         
         private LayerMask _objectCollisionMask;
+
+        public override void Run()
+        {
+            
+        }
+
+        public override void Stop()
+        {
+            
+        }
     }
 }

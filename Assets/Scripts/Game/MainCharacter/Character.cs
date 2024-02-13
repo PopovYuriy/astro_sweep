@@ -1,6 +1,11 @@
+using System;
+using Core.GameSystems.AbilitySystem.Enums;
+using Game.MainCharacter.Abilities;
+using Game.MainCharacter.StatesMachine;
+using Game.MainCharacter.StatesMachine.Enums;
 using UnityEngine;
 
-namespace Game
+namespace Game.MainCharacter
 {
     [RequireComponent(typeof(CharacterController))]
     public sealed class Character : MonoBehaviour
@@ -9,6 +14,8 @@ namespace Game
         
         [SerializeField] private float _speed;
         [SerializeField] private float _rotationSpeed;
+        [SerializeField] private MainCharacterStateMachine _stateMachine;
+        [SerializeField] private AbilityRunController _abilityRunController;
 
         private CharacterController _characterController;
         private float _moveDirection;
@@ -18,6 +25,14 @@ namespace Game
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
+            _abilityRunController.OnAbilityRan += AbilityRanHandler;
+            _abilityRunController.OnAbilitiesStopped += AbilitiesStoppedHandler;
+        }
+
+        private void OnDestroy()
+        {
+            _abilityRunController.OnAbilityRan -= AbilityRanHandler;
+            _abilityRunController.OnAbilitiesStopped -= AbilitiesStoppedHandler;
         }
 
         private void FixedUpdate()
@@ -39,6 +54,21 @@ namespace Game
         public void SetRotationDirection(float direction)
         {
             _rotationDirection = direction;
+        }
+
+        private void AbilityRanHandler(AbilityType type)
+        {
+            switch (type)
+            {
+                case AbilityType.Vacuuming:
+                    _stateMachine.SetState(MainCharacterState.Vacuuming);
+                    break;
+            }
+        }
+
+        private void AbilitiesStoppedHandler()
+        {
+            _stateMachine.SetState(MainCharacterState.Idle);
         }
 
         private void Move(float direction)

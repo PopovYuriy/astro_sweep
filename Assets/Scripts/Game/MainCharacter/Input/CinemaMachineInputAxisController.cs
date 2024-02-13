@@ -1,7 +1,7 @@
-using UnityEngine;
 using Cinemachine;
+using UnityEngine;
 
-namespace Game.Input
+namespace Game.MainCharacter.Input
 {
     public class CinemaMachineInputAxisController : MonoBehaviour
     {

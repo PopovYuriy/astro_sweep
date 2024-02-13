@@ -7,7 +7,7 @@ using Zenject;
 
 namespace Core.GameSystems.InventorySystem
 {
-    public class InventorySystem
+    public class CharacterInventorySystem
     {
         private InventorySystemConfig _config;
         

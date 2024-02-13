@@ -6,12 +6,12 @@ using Tools.CSharp;
 
 namespace Core.Common.StateMachine.SMAsync
 {
-    public class SimpleSimpleStateMachineAsync<T> : ISimpleStateMachineAsync<T>
+    public class SimpleStateMachineAsync<T> : ISimpleStateMachineAsync<T>
     {
         private Dictionary<T, IStateAsync> _states;
         private IStateAsync _currentState;
 
-        public SimpleSimpleStateMachineAsync()
+        public SimpleStateMachineAsync()
         {
             _states = new Dictionary<T, IStateAsync>();
         }

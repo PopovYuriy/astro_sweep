@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Input
+namespace Game.MainCharacter.Input
 {
     public sealed class CharacterInputController : MonoBehaviour
     {
