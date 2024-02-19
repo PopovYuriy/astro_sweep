@@ -1,8 +1,4 @@
-using System;
-using Core.GameSystems.AbilitySystem.Enums;
-using Game.MainCharacter.Abilities;
-using Game.MainCharacter.StatesMachine;
-using Game.MainCharacter.StatesMachine.Enums;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Game.MainCharacter
@@ -13,9 +9,10 @@ namespace Game.MainCharacter
         private const float Gravity = -9.81f;
         
         [SerializeField] private float _speed;
+        [SerializeField] private float _speedTweeningDuration;
+        
         [SerializeField] private float _rotationSpeed;
-        [SerializeField] private MainCharacterStateMachine _stateMachine;
-        [SerializeField] private AbilityRunController _abilityRunController;
+        [SerializeField] private float _rotationTweeningDuration;
 
         private CharacterController _characterController;
         private float _moveDirection;
@@ -25,27 +22,55 @@ namespace Game.MainCharacter
         private float _currentSpeed;
         private float _currentRotationSpeed;
         
+        private Tween _speedTween;
+        private Tween _rotationSpeedTween;
+        
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
-            // _abilityRunController.OnAbilityRan += AbilityRanHandler;
-            // _abilityRunController.OnAbilitiesStopped += AbilitiesStoppedHandler;
         }
 
         private void OnDestroy()
         {
-            // _abilityRunController.OnAbilityRan -= AbilityRanHandler;
-            // _abilityRunController.OnAbilitiesStopped -= AbilitiesStoppedHandler;
+            KillSpeedTween();
+            KillRotationSpeedTween();
         }
 
         private void FixedUpdate()
         {
             if (_moveDirection != 0f)
+            {
+                if (_currentSpeed <= float.Epsilon)
+                {
+                    KillSpeedTween();
+                    _speedTween = DOTween.To(() => _currentSpeed, 
+                        speed => _currentSpeed = speed, 
+                        _speed, _speedTweeningDuration);
+                }
                 Move(_moveDirection);
+            }
+            else
+            {
+                _currentSpeed = 0f;
+            }
             
             if (_rotationDirection != 0f)
+            {
+                if (_currentRotationSpeed <= float.Epsilon)
+                {
+                    KillRotationSpeedTween();
+                    _rotationSpeedTween = DOTween.To(() => _currentRotationSpeed, 
+                        speed => _currentRotationSpeed = speed,
+                        _rotationSpeed, 
+                        _rotationTweeningDuration);
+                }
                 Rotate(_rotationDirection);
-            
+            }
+            else
+            {
+                _currentRotationSpeed = 0f;
+            }
+
             DoGravity();
         }
 
@@ -59,32 +84,14 @@ namespace Game.MainCharacter
             _rotationDirection = direction;
         }
 
-        private void AbilityRanHandler(AbilityType type)
-        {
-            switch (type)
-            {
-                case AbilityType.Vacuuming:
-                    _stateMachine.SetState(MainCharacterState.Vacuuming);
-                    break;
-                case AbilityType.Throwing:
-                    _stateMachine.SetState(MainCharacterState.Throwing);
-                    break;
-            }
-        }
-
-        private void AbilitiesStoppedHandler()
-        {
-            _stateMachine.SetState(MainCharacterState.Idle);
-        }
-
         private void Move(float direction)
         {
-            _characterController.Move(transform.forward * direction * _speed * Time.fixedDeltaTime);
+            _characterController.Move(transform.forward * direction * _currentSpeed * Time.fixedDeltaTime);
         }
 
         private void Rotate(float value)
         {
-            transform.Rotate(new Vector3(0f, value * _rotationSpeed * Time.fixedDeltaTime, 0f), Space.Self);
+            transform.Rotate(new Vector3(0f, value * _currentRotationSpeed * Time.fixedDeltaTime, 0f), Space.Self);
         }
 
         private void DoGravity()
@@ -92,6 +99,24 @@ namespace Game.MainCharacter
             _velocity += Gravity * Time.fixedDeltaTime;
             
             _characterController.Move(Vector3.up * _velocity * Time.fixedDeltaTime);
+        }
+
+        private void KillSpeedTween()
+        {
+            if (_speedTween == null)
+                return;
+            
+            _speedTween.Kill();
+            _speedTween = null;
+        }
+        
+        private void KillRotationSpeedTween()
+        {
+            if (_rotationSpeedTween == null)
+                return;
+            
+            _rotationSpeedTween.Kill();
+            _rotationSpeedTween = null;
         }
     }
 }

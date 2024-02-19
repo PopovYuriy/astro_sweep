@@ -258,10 +258,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84d1648bf25849069de314bf41214572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 2.5
+  _speed: 2
+  _speedTweeningDuration: 1
   _rotationSpeed: 90
-  _stateMachine: {fileID: 739156322907710631}
-  _abilityRunController: {fileID: 2465219780578514862}
+  _rotationTweeningDuration: 0.5
 --- !u!114 &210385251807509717
 MonoBehaviour:
   m_ObjectHideFlags: 0
