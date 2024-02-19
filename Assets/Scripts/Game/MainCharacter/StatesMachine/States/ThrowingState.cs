@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Game.CameraController.StatesMachine;
-using Game.CameraController.StatesMachine.Enums;
 using UnityEngine;
 
 namespace Game.MainCharacter.StatesMachine.States
@@ -16,7 +15,6 @@ namespace Game.MainCharacter.StatesMachine.States
 
         public override async Task Enter()
         {
-            // await _cameraStateMachine.SetState(CharacterCameraControllerState.Throwing);
         }
 
         public override async Task Exit()
