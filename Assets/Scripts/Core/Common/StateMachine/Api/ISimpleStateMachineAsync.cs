@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 namespace Core.Common.StateMachine.Api
 {
     public interface ISimpleStateMachineAsync<T>
     {
         void RegisterState(T stateKey, IStateAsync state);
-        void SetState(T stateKey);
+        Task SetState(T stateKey);
     }
 }

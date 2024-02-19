@@ -25,14 +25,14 @@ namespace Game.MainCharacter
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
-            _abilityRunController.OnAbilityRan += AbilityRanHandler;
-            _abilityRunController.OnAbilitiesStopped += AbilitiesStoppedHandler;
+            // _abilityRunController.OnAbilityRan += AbilityRanHandler;
+            // _abilityRunController.OnAbilitiesStopped += AbilitiesStoppedHandler;
         }
 
         private void OnDestroy()
         {
-            _abilityRunController.OnAbilityRan -= AbilityRanHandler;
-            _abilityRunController.OnAbilitiesStopped -= AbilitiesStoppedHandler;
+            // _abilityRunController.OnAbilityRan -= AbilityRanHandler;
+            // _abilityRunController.OnAbilitiesStopped -= AbilitiesStoppedHandler;
         }
 
         private void FixedUpdate()
@@ -62,6 +62,9 @@ namespace Game.MainCharacter
             {
                 case AbilityType.Vacuuming:
                     _stateMachine.SetState(MainCharacterState.Vacuuming);
+                    break;
+                case AbilityType.Throwing:
+                    _stateMachine.SetState(MainCharacterState.Throwing);
                     break;
             }
         }

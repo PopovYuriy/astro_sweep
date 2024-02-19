@@ -26,6 +26,9 @@ namespace Core.GameSystems.AbilitySystem.Factory
                 case AbilityType.Vacuuming:
                     result = InitializeModel(abilityType, new VacuumingAbilityModel());
                     break;
+                case AbilityType.Throwing:
+                    result = InitializeModel(abilityType, new ThrowingAbilityModel());
+                    break;
             }
 
             return result;

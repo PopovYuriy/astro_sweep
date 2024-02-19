@@ -10,6 +10,7 @@ namespace Core.GameSystems.InventorySystem.Model
         private List<ItemModel> _items;
 
         public int Capacity { get; private set; }
+        public int Count => _items.Count;
         public bool HasFreeSpace => _items.Count < Capacity;
 
         public event Action<ItemModel> OnItemAdded;
@@ -54,6 +55,14 @@ namespace Core.GameSystems.InventorySystem.Model
             
             OnItemPulled?.Invoke(itemModel);
             return true;
+        }
+
+        public ItemData GetItem(int index)
+        {
+            if (index >= _items.Count || index < 0)
+                throw new ArgumentOutOfRangeException($"Index is out of range of container items count");
+            
+            return _items[index].Data;
         }
     }
 }

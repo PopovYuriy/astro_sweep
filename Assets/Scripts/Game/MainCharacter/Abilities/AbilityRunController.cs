@@ -1,7 +1,11 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.GameSystems.AbilitySystem;
 using Core.GameSystems.AbilitySystem.Enums;
+using Game.MainCharacter.StatesMachine;
+using Game.MainCharacter.StatesMachine.Enums;
+using Tools.CSharp;
 using UnityEngine;
 using Zenject;
 
@@ -9,14 +13,12 @@ namespace Game.MainCharacter.Abilities
 {
     public class AbilityRunController : MonoBehaviour
     {
+        [SerializeField] private MainCharacterStateMachine _characterStateMachine;
         [SerializeField] private TypeToRunnerMap[] _runnersMap;
 
         private CharacterAbilitySystem _abilitySystem;
 
         private TypeToRunnerMap _currentRunner;
-
-        public event Action<AbilityType> OnAbilityRan;
-        public event Action OnAbilitiesStopped;
 
         [Inject]
         private void Construct(CharacterAbilitySystem abilitySystem)
@@ -37,26 +39,47 @@ namespace Game.MainCharacter.Abilities
                 return;
             }
 
+            RunAbilityAsync(type, runner).Run();
+        }
+
+        private async Task RunAbilityAsync(AbilityType type, AbilityRunnerAbstract runner)
+        {
             if (_currentRunner == null)
             {
+                var characterState = DetermineCharacterState(type);
+                await _characterStateMachine.SetState(characterState);
                 runner.Run();
                 _currentRunner = new TypeToRunnerMap(type, runner);
-                OnAbilityRan?.Invoke(type);
             }
             else
             {
                 _currentRunner.Runner.Stop();
                 if (_currentRunner.Type != type)
                 {
+                    var characterState = DetermineCharacterState(type);
+                    await _characterStateMachine.SetState(characterState);
                     runner.Run();
                     _currentRunner = new TypeToRunnerMap(type, runner);
-                    OnAbilityRan?.Invoke(type);
                 }
                 else
                 {
                     _currentRunner = null;
-                    OnAbilitiesStopped?.Invoke();
+                    await _characterStateMachine.SetState(MainCharacterState.Idle);
                 }
+            }
+        }
+
+        private MainCharacterState DetermineCharacterState(AbilityType abilityType)
+        {
+            switch (abilityType)
+            {
+                case AbilityType.Vacuuming:
+                    return MainCharacterState.Vacuuming;
+                case AbilityType.Throwing:
+                    return MainCharacterState.Throwing;
+                default:
+                    Debug.LogWarning($"There is no state for ability {abilityType}");
+                    return MainCharacterState.Idle;
             }
         }
         

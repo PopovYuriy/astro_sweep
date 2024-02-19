@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c6ca562b25d4655a3e4e2a0d305470f, type: 3}
-  m_Name: AbilitiesConfig
+  m_Script: {fileID: 11500000, guid: 105accc6827148648c146c1a1946a432, type: 3}
+  m_Name: ThrowingAbilityData
   m_EditorClassIdentifier: 
-  _abilitiesData:
-  - {fileID: 11400000, guid: bb8b87ddca748442eb5282bda5b280e5, type: 2}
-  - {fileID: 11400000, guid: 5cc8f6319f223426da85789e51511b36, type: 2}
+  <Type>k__BackingField: 2
+  <ChargeCost>k__BackingField: 0
+  <Range>k__BackingField: 0

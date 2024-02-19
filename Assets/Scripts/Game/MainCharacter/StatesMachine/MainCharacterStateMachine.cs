@@ -1,7 +1,9 @@
 using System;
-using Core.Common.StateMachine.SMAsync;
+using System.Threading.Tasks;
+using Core.Common.StateMachine.SimpleSMAsync;
 using Game.MainCharacter.StatesMachine.Enums;
 using Game.MainCharacter.StatesMachine.States;
+using Tools.CSharp;
 using UnityEngine;
 
 namespace Game.MainCharacter.StatesMachine
@@ -19,12 +21,12 @@ namespace Game.MainCharacter.StatesMachine
             foreach (var stateMap in _states)
                 _stateMachine.RegisterState(stateMap.StateKey, stateMap.State);
             
-            _stateMachine.SetState(MainCharacterState.Idle);
+            _stateMachine.SetState(MainCharacterState.Idle).Run();
         }
 
-        public void SetState(MainCharacterState state)
+        public async Task SetState(MainCharacterState state)
         {
-            _stateMachine.SetState(state);
+            await _stateMachine.SetState(state);
         }
 
         [Serializable]

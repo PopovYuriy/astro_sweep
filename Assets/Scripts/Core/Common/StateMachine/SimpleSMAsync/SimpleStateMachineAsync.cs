@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Common.StateMachine.Api;
-using Tools.CSharp;
 
-namespace Core.Common.StateMachine.SMAsync
+namespace Core.Common.StateMachine.SimpleSMAsync
 {
     public class SimpleStateMachineAsync<T> : ISimpleStateMachineAsync<T>
     {
@@ -25,12 +24,12 @@ namespace Core.Common.StateMachine.SMAsync
             state.ResetState();
         }
 
-        public void SetState(T stateKey)
+        public async Task SetState(T stateKey)
         {
             if (!_states.ContainsKey(stateKey))
                 throw new Exception($"State {stateKey} is not registered");
-            
-            SetStateAsync(stateKey).Run();
+
+            await SetStateAsync(stateKey);
         }
 
         private async Task SetStateAsync(T stateKey)
