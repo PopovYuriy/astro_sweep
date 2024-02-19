@@ -26,6 +26,12 @@ namespace Game.MainCharacter.Abilities
             _abilitySystem = abilitySystem;
         }
 
+        private void OnDestroy()
+        {
+            if (_currentRunner != null)
+                _currentRunner.Runner.OnStopped -= RunnerStoppedHandler;
+        }
+
         public void TryRunAbility(AbilityType type)
         {
             var abilityModel = _abilitySystem.GetAbilityModel(type);
@@ -49,24 +55,20 @@ namespace Game.MainCharacter.Abilities
                 var characterState = DetermineCharacterState(type);
                 await _characterStateMachine.SetState(characterState);
                 runner.Run();
+                runner.OnStopped += RunnerStoppedHandler;
                 _currentRunner = new TypeToRunnerMap(type, runner);
             }
             else
             {
                 _currentRunner.Runner.Stop();
-                if (_currentRunner.Type != type)
-                {
-                    var characterState = DetermineCharacterState(type);
-                    await _characterStateMachine.SetState(characterState);
-                    runner.Run();
-                    _currentRunner = new TypeToRunnerMap(type, runner);
-                }
-                else
-                {
-                    _currentRunner = null;
-                    await _characterStateMachine.SetState(MainCharacterState.Idle);
-                }
             }
+        }
+
+        private void RunnerStoppedHandler()
+        {
+            _currentRunner.Runner.OnStopped -= RunnerStoppedHandler;
+            _currentRunner = null;
+            _characterStateMachine.SetState(MainCharacterState.Idle).Run();
         }
 
         private MainCharacterState DetermineCharacterState(AbilityType abilityType)

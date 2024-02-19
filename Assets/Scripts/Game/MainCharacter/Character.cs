@@ -21,7 +21,10 @@ namespace Game.MainCharacter
         private float _moveDirection;
         private float _rotationDirection;
         private float _velocity;
-
+        
+        private float _currentSpeed;
+        private float _currentRotationSpeed;
+        
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();

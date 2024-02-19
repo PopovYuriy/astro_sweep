@@ -15,10 +15,12 @@ namespace Game.MainCharacter.StatesMachine.States
         public override async Task Enter()
         {
             _particleSystem.gameObject.SetActive(true);
+            _particleSystem.Play();
         }
 
         public override async Task Exit()
         {
+            _particleSystem.Stop();
             _particleSystem.gameObject.SetActive(false);
         }
     }

@@ -83,11 +83,6 @@ MonoBehaviour:
   _throwMaxStrength: 700
   _minAngle: 45
   _maxAngle: 80
-  _lineRenderer: {fileID: 7192090368250264751}
-  _trajectoryLinePoints: 25
-  _timeBetweenPoints: 0.05
-  _testItemData: {fileID: 11400000, guid: 498a35867dcc549538951e82b47a8bce, type: 2}
-  _distance: 34.5
 --- !u!1 &1629255347517358256
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,8 +257,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84d1648bf25849069de314bf41214572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 3
-  _rotationSpeed: 100
+  _speed: 2.5
+  _rotationSpeed: 90
   _stateMachine: {fileID: 739156322907710631}
   _abilityRunController: {fileID: 2465219780578514862}
 --- !u!114 &210385251807509717
@@ -325,7 +320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _collider: {fileID: 2299200987580444294}
-  _suckingStrength: 5
+  _suckingStrength: 7
   _minDistanceToPickUp: 0.5
 --- !u!65 &2299200987580444294
 BoxCollider:
@@ -346,8 +341,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1.5}
-  m_Center: {x: 0, y: 0, z: 0.88}
+  m_Size: {x: 1, y: 1, z: 2.5}
+  m_Center: {x: 0, y: 0, z: 1.4}
 --- !u!1 &2375025025677212135
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,7 +938,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 0.2
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -1114,7 +1109,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.2
+      scalar: 0.1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -4627,15 +4622,16 @@ ParticleSystem:
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 2
-    inside: 1
+    inside: 0
     outside: 0
     enter: 0
-    exit: 0
-    colliderQueryMode: 0
+    exit: 1
+    colliderQueryMode: 1
     radiusScale: 1
-    primitives: []
+    primitives:
+    - {fileID: 6880115362362221549}
   SubModule:
     serializedVersion: 2
     enabled: 0
