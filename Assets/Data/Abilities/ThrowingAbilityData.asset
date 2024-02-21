@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: ThrowingAbilityData
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 2
-  <ChargeCost>k__BackingField: 0
-  <Range>k__BackingField: 0
+  <ChargingData>k__BackingField:
+    <Value>k__BackingField: 10
+    <ModifierType>k__BackingField: 3

@@ -14,51 +14,71 @@ namespace Core.GameSystems.StatsSystem.Model
         
         public StatType Type { get; }
         public float Value => CalculateValue();
+        public float MaxValue { get; }
 
         public event Action OnValueChanged;
 
-        public StatModel(StatType type, float baseValue)
+        public StatModel(StatType type, float baseValue, float maxValue)
         {
             Type = type;
             _baseValue = baseValue;
+            MaxValue = maxValue;
             _modifiers = new List<IStatModifier>();
             _tickableModifiers = new List<IStatModifier>();
         }
 
         public void ApplyPermanentModifier(IStatModifier modifier)
         {
-            _baseValue = modifier.Apply(_baseValue);
+            var previousValue = _baseValue;
+            
+            _baseValue = Mathf.Clamp(modifier.Apply(_baseValue), 0f, MaxValue);
+            
+            if (Math.Abs(previousValue - Value) > float.Epsilon)
+                OnValueChanged?.Invoke();
         }
 
-        public void AddModifier(IStatModifier modifier, bool isTickable)
+        public void AddModifier(IStatModifier modifier)
         {
-            if (isTickable)
+            var previousValue = Value;
+            
+            if (modifier.IsTimeBased)
                 _tickableModifiers.Add(modifier);
             else
                 _modifiers.Add(modifier);
+            
+            if (Math.Abs(previousValue - Value) > float.Epsilon)
+                OnValueChanged?.Invoke();
         }
 
-        public void RemoveModifier(IStatModifier modifier, bool isTickable)
+        public void RemoveModifier(IStatModifier modifier)
         {
-            if (isTickable)
+            if (modifier.IsTimeBased)
             {
-                if (_modifiers.Contains(modifier))
-                    _modifiers.Remove(modifier);
+                if (_tickableModifiers.Contains(modifier))
+                    _tickableModifiers.Remove(modifier);
                 else
                     Debug.LogError($"Modifier {modifier} not exist");
             }
             else
             {
+                var previousValue = Value;
                 if (_modifiers.Contains(modifier))
                     _modifiers.Remove(modifier);
                 else
+                {
                     Debug.LogError($"Modifier {modifier} not exist");
+                    return;
+                }
+
+                if (Math.Abs(previousValue - Value) > float.Epsilon)
+                    OnValueChanged?.Invoke();
             }
         }
         
         public void Tick()
         {
-            foreach (var modifier in _tickableModifiers)
+            var modifiers = _tickableModifiers.ToArray();
+            foreach (var modifier in modifiers)
                 ApplyPermanentModifier(modifier);
         }
 
@@ -68,8 +88,9 @@ namespace Core.GameSystems.StatsSystem.Model
 
             foreach (var modifier in _modifiers)
                 value = modifier.Apply(value);
-            
-            return (float)Math.Round(value, 4);
+
+            value = (float) Math.Round(value, 4);
+            return Mathf.Clamp(value, 0f, MaxValue);;
         }
     }
 }

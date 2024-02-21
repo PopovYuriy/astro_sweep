@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-namespace Game.MainCharacter.Abilities
+namespace Game.MainCharacter.Abilities.Detectors
 {
     public sealed class AbilityRunButtonPressDetector : MonoBehaviour
     {
@@ -36,7 +36,7 @@ namespace Game.MainCharacter.Abilities
                 return;
             }
             
-            _abilitiesController.TryRunAbility(abilityMap.AbilityType);
+            _abilitiesController.ProcessAbilityRunner(abilityMap.AbilityType);
         }
         
         [Serializable]

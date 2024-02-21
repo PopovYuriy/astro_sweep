@@ -18,8 +18,7 @@ namespace Core.Installers
         private void InstallSystems()
         {
             Container.Bind<CharacterInventorySystem>().AsSingle().Lazy();
-            Container.Bind(typeof(ITickable), typeof(IInitializable), typeof(CharacterStatsSystem))
-                .To<CharacterStatsSystem>().AsSingle();
+            Container.Bind(typeof(ITickable), typeof(CharacterStatsSystem)).To<CharacterStatsSystem>().AsSingle();
             
             Container.BindFactory<AbilityType, IAbilityModel, AbilityModelsFactory>().FromFactory<CharacterAbilityModelsFactory>();
             Container.Bind<CharacterAbilitySystem>().AsSingle().Lazy();

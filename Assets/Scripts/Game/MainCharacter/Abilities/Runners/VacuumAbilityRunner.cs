@@ -6,7 +6,7 @@ using Game.Environment.InteractiveItems;
 using UnityEngine;
 using Zenject;
 
-namespace Game.MainCharacter.Abilities
+namespace Game.MainCharacter.Abilities.Runners
 {
     public sealed class VacuumAbilityRunner : AbilityRunnerAbstract
     {
@@ -18,7 +18,6 @@ namespace Game.MainCharacter.Abilities
         
         private bool _activated;
         private List<VacuumableItem> _objectsToVacuuming;
-        private List<VacuumableItem> _objectsToAdd;
         private List<VacuumableItem> _objectsToDelete;
 
         [Inject]
@@ -31,8 +30,7 @@ namespace Game.MainCharacter.Abilities
         {
             _objectsToVacuuming = new List<VacuumableItem>();
             _objectsToDelete = new List<VacuumableItem>();
-            _objectsToAdd = new List<VacuumableItem>();
-            Stop();
+            StopInternal();
         }
 
         private void Update()
@@ -40,18 +38,14 @@ namespace Game.MainCharacter.Abilities
             if (!_activated)
                 return;
             
-            if (_objectsToAdd.Count > 0)
-            {
-                foreach (var vacuumableItem in _objectsToAdd)
-                    _objectsToVacuuming.Add(vacuumableItem);
-                
-                _objectsToAdd.Clear();
-            }
-            
             if (_objectsToVacuuming.Count > 0)
             {
                 foreach (var vacuumableItem in _objectsToVacuuming)
+                {
                     Vacuum(vacuumableItem);
+                    if (!_activated)
+                        return;
+                }
             }
 
             if (_objectsToDelete.Count > 0)
@@ -61,33 +55,28 @@ namespace Game.MainCharacter.Abilities
                 
                 _objectsToDelete.Clear();
             }
-            
-            if (!_inventoryContainer.HasFreeSpace)
-                Stop();
         }
 
         protected override void RunInternal()
         {
+            DispatchActed();
             _activated = true;
             _collider.enabled = true;
-            Debug.Log("Vacuuming started");
         }
 
         protected override void StopInternal()
         {
             _activated = false;
             _objectsToVacuuming.Clear();
-            _objectsToAdd.Clear();
             _objectsToDelete.Clear();
             
             _collider.enabled = false;
-            Debug.Log("Vacuuming stopped");
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.TryGetComponent(out VacuumableItem item) && item.Data.CollectionType == ItemCollectionType.Throwable)
-                _objectsToAdd.Add(item);
+                _objectsToVacuuming.Add(item);
         }
         
         private void OnTriggerExit(Collider other)
@@ -100,13 +89,11 @@ namespace Game.MainCharacter.Abilities
         {
             var distance = Vector3.Distance(transform.position, item.transform.position);
             
-            if (distance < _minDistanceToPickUp && _inventoryContainer.HasFreeSpace)
+            if (distance < _minDistanceToPickUp)
             {
                 _inventoryContainer.TryAddItem(item.Data);
                 Destroy(item.gameObject);
-                
-                if (!_inventoryContainer.HasFreeSpace)
-                    _objectsToDelete.Add(item);
+                _objectsToDelete.Add(item);
             }
             else
             {

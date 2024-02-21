@@ -1,3 +1,4 @@
+using System;
 using Core.GameSystems.AbilitySystem.Data;
 using Core.GameSystems.AbilitySystem.Enums;
 using Core.GameSystems.AbilitySystem.Model;
@@ -19,19 +20,17 @@ namespace Core.GameSystems.AbilitySystem.Factory
         
         public IAbilityModel Create(AbilityType abilityType)
         {
-            IAbilityModel result = null;
-            
             switch (abilityType)
             {
                 case AbilityType.Vacuuming:
-                    result = InitializeModel(abilityType, new VacuumingAbilityModel());
-                    break;
+                    return InitializeModel(abilityType, new VacuumingAbilityModel());
                 case AbilityType.Throwing:
-                    result = InitializeModel(abilityType, new ThrowingAbilityModel());
-                    break;
+                    return InitializeModel(abilityType, new ThrowingAbilityModel());
+                case AbilityType.Charging:
+                    return InitializeModel(abilityType, new ChargingAbilityModel());
+                default:
+                    throw new ArgumentException($"Can't create ability model by type {abilityType}");
             }
-
-            return result;
         }
 
         private IAbilityModel InitializeModel(AbilityType abilityType, IAbilityModel model)

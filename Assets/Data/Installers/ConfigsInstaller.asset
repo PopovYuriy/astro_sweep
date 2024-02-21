@@ -15,3 +15,4 @@ MonoBehaviour:
   _inventorySystemConfig: {fileID: 11400000, guid: caf0e64b1d5db4d579207a1270c41560,
     type: 2}
   _abilitiesConfig: {fileID: 11400000, guid: 88f158c2b2a1f4560aee1b6572fadfb1, type: 2}
+  _statsConfig: {fileID: 11400000, guid: 5dacbb325ec004d1ea6300877284ea7d, type: 2}

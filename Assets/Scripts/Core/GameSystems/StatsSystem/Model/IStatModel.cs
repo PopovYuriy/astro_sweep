@@ -11,9 +11,10 @@ namespace Core.GameSystems.StatsSystem.Model
         
         StatType Type { get; }
         float Value { get; }
+        float MaxValue { get; }
 
         void ApplyPermanentModifier(IStatModifier modifier);
-        void AddModifier(IStatModifier modifier, bool isTickable);
-        void RemoveModifier(IStatModifier modifier, bool isTickable);
+        void AddModifier(IStatModifier modifier);
+        void RemoveModifier(IStatModifier modifier);
     }
 }

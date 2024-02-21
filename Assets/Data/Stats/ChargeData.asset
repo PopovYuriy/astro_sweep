@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 105accc6827148648c146c1a1946a432, type: 3}
-  m_Name: VacuumingData
+  m_Script: {fileID: 11500000, guid: afe7ad08f5d34dbb888209d1eb26b5f5, type: 3}
+  m_Name: ChargeData
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 1
-  <ChargingData>k__BackingField:
-    <Value>k__BackingField: 1
-    <ModifierType>k__BackingField: 1
+  <Value>k__BackingField: 100
+  <MaxValue>k__BackingField: 100

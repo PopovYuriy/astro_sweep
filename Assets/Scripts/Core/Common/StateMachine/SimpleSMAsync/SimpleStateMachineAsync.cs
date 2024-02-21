@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Common.StateMachine.Api;
 
@@ -9,6 +10,8 @@ namespace Core.Common.StateMachine.SimpleSMAsync
     {
         private Dictionary<T, IStateAsync> _states;
         private IStateAsync _currentState;
+
+        public T CurrentState => _states.First(state => state.Value == _currentState).Key;
 
         public SimpleStateMachineAsync()
         {

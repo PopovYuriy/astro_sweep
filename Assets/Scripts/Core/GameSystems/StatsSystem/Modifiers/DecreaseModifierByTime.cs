@@ -4,7 +4,10 @@ namespace Core.GameSystems.StatsSystem.Modifiers
 {
     public sealed class DecreaseModifierByTime : BaseModifierAbstract
     {
-        public DecreaseModifierByTime(float value) : base(value) { }
+        public DecreaseModifierByTime(float value) : base(value)
+        {
+            IsTimeBased = true;
+        }
 
         public override float Apply(float value)
         {
