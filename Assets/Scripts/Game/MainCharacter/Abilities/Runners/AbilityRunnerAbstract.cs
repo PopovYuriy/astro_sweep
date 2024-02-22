@@ -10,7 +10,7 @@ namespace Game.MainCharacter.Abilities.Runners
 
         public event Action OnAct;
         public event Action OnRun;
-        public event Action OnStop;
+        public event Action<AbilityRunnerAbstract> OnStop;
 
         public void SetData(AbilityData data)
         {
@@ -26,7 +26,7 @@ namespace Game.MainCharacter.Abilities.Runners
         public void Stop()
         {
             StopInternal();
-            OnStop?.Invoke();
+            OnStop?.Invoke(this);
         }
 
         protected abstract void RunInternal();

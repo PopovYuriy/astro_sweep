@@ -10,14 +10,14 @@ namespace Game.MainCharacter.Abilities.Detectors
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.TryGetComponent<AbilityPlaceholder>(out var abilityRunner))
-                _abilitiesController.ProcessAbilityRunner(abilityRunner.AbilityType);
+            if (other.TryGetComponent<AbilityPlaceholder>(out var abilityPlaceholder))
+                _abilitiesController.ProcessAbilityRunner(abilityPlaceholder.AbilityType);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.TryGetComponent<AbilityPlaceholder>(out var abilityRunner))
-                _abilitiesController.ProcessAbilityRunner(abilityRunner.AbilityType);
+            if (other.TryGetComponent<AbilityPlaceholder>(out var abilityPlaceholder))
+                _abilitiesController.ProcessAbilityRunner(abilityPlaceholder.AbilityType);
         }
     }
 }

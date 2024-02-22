@@ -9,7 +9,7 @@ namespace Core.GameSystems.AbilitySystem.Model
         bool IsAvailable { get; }
         bool IsReady { get; }
 
-        event Action OnReadyChanged;
+        event Action<IAbilityModel> OnReadyChanged;
 
         void Initialize(AbilityData data);
     }

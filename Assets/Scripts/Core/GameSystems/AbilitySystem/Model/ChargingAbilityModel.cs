@@ -16,7 +16,7 @@ namespace Core.GameSystems.AbilitySystem.Model
         public bool IsAvailable { get; private set; }
         public bool IsReady { get; private set; }
         
-        public event Action OnReadyChanged;
+        public event Action<IAbilityModel> OnReadyChanged;
 
         [Inject]
         private void Construct(CharacterStatsSystem statsSystem)
@@ -51,7 +51,7 @@ namespace Core.GameSystems.AbilitySystem.Model
             IsReady = _chargeStatModel.Value < _chargeStatModel.MaxValue;
             
             if (IsReady != isReadyPrevious)
-                OnReadyChanged?.Invoke();
+                OnReadyChanged?.Invoke(this);
         }
     }
 }

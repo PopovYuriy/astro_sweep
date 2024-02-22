@@ -16,7 +16,7 @@ namespace Core.GameSystems.AbilitySystem.Model
         public bool IsAvailable { get; private set; }
         public bool IsReady { get; private set; }
 
-        public event Action OnReadyChanged;
+        public event Action<IAbilityModel> OnReadyChanged;
 
         [Inject]
         private void Construct(CharacterInventorySystem characterInventorySystem)
@@ -61,7 +61,7 @@ namespace Core.GameSystems.AbilitySystem.Model
             IsReady = _characterInventoryContainer.HasFreeSpace;
             
             if (needDispatchEvent && previousValue != IsReady)
-                OnReadyChanged?.Invoke();
+                OnReadyChanged?.Invoke(this);
         }
     }
 }

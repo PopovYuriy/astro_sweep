@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: VacuumingData
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 1
+  <Mode>k__BackingField: 1
+  <AbilitiesToBlock>k__BackingField:
+    _flags: 6
   <ChargingData>k__BackingField:
     <Value>k__BackingField: 1
     <ModifierType>k__BackingField: 1

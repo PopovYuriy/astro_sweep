@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 105accc6827148648c146c1a1946a432, type: 3}
   m_Name: ThrowingAbilityData
   m_EditorClassIdentifier: 
-  <Type>k__BackingField: 2
+  <Type>k__BackingField: 4
+  <Mode>k__BackingField: 1
+  <AbilitiesToBlock>k__BackingField:
+    _flags: 5
   <ChargingData>k__BackingField:
     <Value>k__BackingField: 10
     <ModifierType>k__BackingField: 3

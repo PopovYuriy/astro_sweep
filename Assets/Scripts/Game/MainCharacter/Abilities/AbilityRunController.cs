@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.GameSystems.AbilitySystem;
@@ -8,20 +9,23 @@ using Game.MainCharacter.Abilities.Runners;
 using Game.MainCharacter.StatesMachine;
 using Game.MainCharacter.StatesMachine.Enums;
 using Tools.CSharp;
+using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
 namespace Game.MainCharacter.Abilities
 {
-    public class AbilityRunController : MonoBehaviour
+    public sealed class AbilityRunController : MonoBehaviour
     {
         [SerializeField] private MainCharacterStateMachine _characterStateMachine;
         [SerializeField] private TypeToRunnerMap[] _runnersMap;
 
         private CharacterAbilitySystem _abilitySystem;
 
-        private TypeToRunnerMap _currentRunner;
-        private IAbilityModel _currentAbilityModel;
+        private List<RunnerData> _currentRunners;
+
+        // private TypeToRunnerMap _currentRunner;
+        // private IAbilityModel _currentAbilityModel;
 
         [Inject]
         private void Construct(CharacterAbilitySystem abilitySystem)
@@ -32,38 +36,46 @@ namespace Game.MainCharacter.Abilities
                 var model = _abilitySystem.GetAbilityModel(runnerMap.Type);
                 runnerMap.Runner.SetData(model.Data);
             }
+
+            _currentRunners = new List<RunnerData>();
         }
 
         private void OnDestroy()
         {
-            if (_currentRunner != null)
-                _currentRunner.Runner.OnStop -= RunnerStopHandler;
-
-            if (_currentAbilityModel != null)
-                _currentAbilityModel.OnReadyChanged -= AbilityIsReadyChangedHandler;
+            if (_currentRunners.Count > 0)
+            {
+                foreach (var runnerData in _currentRunners)
+                {
+                    runnerData.Runner.OnStop -= RunnerStopHandler;
+                    runnerData.Model.OnReadyChanged -= AbilityIsReadyChangedHandler;
+                }
+            }
         }
 
         public void ProcessAbilityRunner(AbilityType type)
         {
-            if (_currentRunner == null)
-            {
-                var abilityModel = _abilitySystem.GetAbilityModel(type);
-                if (!abilityModel.IsAvailable || !abilityModel.IsReady)
-                    return;
-                
-                var runner = _runnersMap.FirstOrDefault(map => map.Type == type)?.Runner;
-                if (runner == null)
-                {
-                    Debug.LogWarning($"Here is no binded runner for ability type {type}");
-                    return;
-                }
+            if (TryStopActiveAbility(type))
+                return;
+            
+            if (CheckIsAbilityBlocked(type))
+                return;
+            
+            var abilityModel = _abilitySystem.GetAbilityModel(type);
+            
+            if (!abilityModel.IsAvailable || !abilityModel.IsReady)
+                return;
 
-                RunAbilityAsync(type, runner, abilityModel).Run();
-            }
-            else
+            if (abilityModel.Data.Mode == AbilityMode.Single)
+                StopAllActiveRunners();
+            
+            var runner = _runnersMap.FirstOrDefault(map => map.Type == type)?.Runner;
+            if (runner == null)
             {
-                _currentRunner.Runner.Stop();
+                Debug.LogWarning($"Here is no binded runner for ability type {type}");
+                return;
             }
+
+            RunAbilityAsync(type, runner, abilityModel).Run();
         }
 
         private async Task RunAbilityAsync(AbilityType type, AbilityRunnerAbstract runner, IAbilityModel model)
@@ -71,37 +83,81 @@ namespace Game.MainCharacter.Abilities
             var characterState = DetermineCharacterState(type);
             await _characterStateMachine.SetState(characterState);
             
-            _currentAbilityModel = model;
-            _currentAbilityModel.OnReadyChanged += AbilityIsReadyChangedHandler;
+            model.OnReadyChanged += AbilityIsReadyChangedHandler;
             
             runner.Run();
             runner.OnStop += RunnerStopHandler;
-            _currentRunner = new TypeToRunnerMap(type, runner);
+            
+            var runnerData = new RunnerData(runner, model);
+            _currentRunners.Add(runnerData);
         }
 
-        private void RunnerStopHandler()
+        private bool CheckIsAbilityBlocked(AbilityType type)
         {
-            UnsubscribeCurrentAbility();
+            if (_currentRunners.Count == 0)
+                return false;
+
+            return _currentRunners.Any(data => data.Model.Data.AbilitiesToBlock.GetCollection().Contains(type));
+        }
+
+        private void RunnerStopHandler(AbilityRunnerAbstract runner)
+        {
+            var runnerData = _currentRunners.First(data => data.Runner == runner);
+            UnsubscribeAbility(runnerData);
         }
         
-        private void AbilityIsReadyChangedHandler()
+        private void AbilityIsReadyChangedHandler(IAbilityModel model)
         {
-            if (_currentAbilityModel.IsReady)
+            if (model.IsReady)
                 return;
             
-            var runner = _currentRunner.Runner;
-            UnsubscribeCurrentAbility();
-            runner.Stop();
+            var runnerData = _currentRunners.First(data => data.Model == model);
+            StopAndDeleteAbility(runnerData);
         }
 
-        private void UnsubscribeCurrentAbility()
+        private void StopAllActiveRunners()
         {
-            _currentRunner.Runner.OnStop -= RunnerStopHandler;
-            _currentRunner = null;
+            foreach (var runnerData in _currentRunners)
+                UnsubscribeAndStopAbility(runnerData);
+            
+            _currentRunners.Clear();
             _characterStateMachine.SetState(MainCharacterState.Idle).Run();
+        }
 
-            _currentAbilityModel.OnReadyChanged -= AbilityIsReadyChangedHandler;
-            _currentAbilityModel = null;
+        private bool TryStopActiveAbility(AbilityType type)
+        {
+            if (_currentRunners.Count == 0)
+                return false;
+
+            var runnerData = _currentRunners.FirstOrDefault(data => data.Model.Data.Type == type);
+            if (runnerData == null)
+                return false;
+
+            StopAndDeleteAbility(runnerData);
+
+            return true;
+        }
+
+        private void StopAndDeleteAbility(RunnerData data)
+        {
+            UnsubscribeAndStopAbility(data);
+
+            _currentRunners.Remove(data);
+            
+            if (_currentRunners.Count == 0)
+                _characterStateMachine.SetState(MainCharacterState.Idle).Run();
+        }
+
+        private void UnsubscribeAndStopAbility(RunnerData data)
+        {
+            UnsubscribeAbility(data);
+            data.Runner.Stop();
+        }
+
+        private void UnsubscribeAbility(RunnerData data)
+        {
+            data.Runner.OnStop -= RunnerStopHandler;
+            data.Model.OnReadyChanged -= AbilityIsReadyChangedHandler;
         }
 
         private MainCharacterState DetermineCharacterState(AbilityType abilityType)
@@ -128,6 +184,18 @@ namespace Game.MainCharacter.Abilities
             {
                 Type = type;
                 Runner = runner;
+            }
+        }
+
+        private sealed class RunnerData
+        {
+            public AbilityRunnerAbstract Runner { get; }
+            public IAbilityModel Model { get; }
+
+            public RunnerData(AbilityRunnerAbstract runner, IAbilityModel model)
+            {
+                Runner = runner;
+                Model = model;
             }
         }
     }

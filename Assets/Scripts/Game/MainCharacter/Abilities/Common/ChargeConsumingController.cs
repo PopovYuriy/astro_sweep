@@ -52,7 +52,7 @@ namespace Game.MainCharacter.Abilities.Common
                 _chargeStatModel.ApplyPermanentModifier(_chargeStatModifier);
         }
 
-        private void AbilityStopHandler()
+        private void AbilityStopHandler(AbilityRunnerAbstract runner)
         {
             if (_chargeStatModifier.IsTimeBased)
                 _chargeStatModel.RemoveModifier(_chargeStatModifier);

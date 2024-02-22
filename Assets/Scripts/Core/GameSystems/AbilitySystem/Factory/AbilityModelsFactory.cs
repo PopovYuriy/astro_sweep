@@ -29,7 +29,7 @@ namespace Core.GameSystems.AbilitySystem.Factory
                 case AbilityType.Charging:
                     return InitializeModel(abilityType, new ChargingAbilityModel());
                 default:
-                    throw new ArgumentException($"Can't create ability model by type {abilityType}");
+                    throw new ArgumentException($"Can't create ability model by type {abilityType.ToString()}");
             }
         }
 

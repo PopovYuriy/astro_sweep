@@ -80,7 +80,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _trajectionStartPosition: {fileID: 559519819231035706}
-  _aimTransform: {fileID: 6545683852306026774}
   _throwMaxStrength: 700
   _minAngle: 45
   _maxAngle: 80
@@ -665,9 +664,9 @@ MonoBehaviour:
   _runnersMap:
   - <Type>k__BackingField: 1
     <Runner>k__BackingField: {fileID: 7691812381264410807}
-  - <Type>k__BackingField: 2
-    <Runner>k__BackingField: {fileID: 1917858498335546425}
   - <Type>k__BackingField: 4
+    <Runner>k__BackingField: {fileID: 1917858498335546425}
+  - <Type>k__BackingField: 16
     <Runner>k__BackingField: {fileID: 8625742180804010365}
 --- !u!114 &7405264118851685356
 MonoBehaviour:
@@ -685,7 +684,7 @@ MonoBehaviour:
   - <KeyCode>k__BackingField: 41
     <AbilityType>k__BackingField: 1
   - <KeyCode>k__BackingField: 42
-    <AbilityType>k__BackingField: 2
+    <AbilityType>k__BackingField: 4
   _abilitiesController: {fileID: 2465219780578514862}
 --- !u!136 &4771515550088095842
 CapsuleCollider:
