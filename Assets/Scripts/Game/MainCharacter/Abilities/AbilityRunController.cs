@@ -71,15 +71,11 @@ namespace Game.MainCharacter.Abilities
                 return;
             }
 
-            RunAbilityAsync(type, runner as IAbilityRunner, abilityModel).Run();
+            RunAbilityAsync(runner as IAbilityRunner, abilityModel).Run();
         }
 
-        private async Task RunAbilityAsync(AbilityType type, IAbilityRunner runner, IAbilityModel model)
+        private async Task RunAbilityAsync(IAbilityRunner runner, IAbilityModel model)
         {
-            Debug.Log($"RunAbilityAsync :: {type}");
-            var characterState = DetermineCharacterState(type);
-            await _characterStateMachine.SetState(characterState);
-            
             model.OnReadyChanged += AbilityIsReadyChangedHandler;
             
             runner.Run();
@@ -144,7 +140,6 @@ namespace Game.MainCharacter.Abilities
 
         private void UnsubscribeAndStopAbility(RunnerData data)
         {
-            Debug.Log($"Stop Ability :: {data.Model.Data.Type}");
             UnsubscribeAbility(data);
             data.Runner.Stop();
         }
@@ -155,20 +150,6 @@ namespace Game.MainCharacter.Abilities
             data.Model.OnReadyChanged -= AbilityIsReadyChangedHandler;
         }
 
-        private MainCharacterState DetermineCharacterState(AbilityType abilityType)
-        {
-            switch (abilityType)
-            {
-                case AbilityType.Vacuuming:
-                    return MainCharacterState.Vacuuming;
-                case AbilityType.Throwing:
-                    return MainCharacterState.Throwing;
-                default:
-                    Debug.LogWarning($"There is no state for ability {abilityType}");
-                    return MainCharacterState.Idle;
-            }
-        }
-        
         [Serializable]
         private sealed class TypeToRunnerMap
         {

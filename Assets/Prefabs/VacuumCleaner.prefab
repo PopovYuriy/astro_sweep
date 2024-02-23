@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccbef3853f0045cfaa8369610af8d3d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _state: {fileID: 9167021967228476194}
   _trajectionStartPosition: {fileID: 559519819231035706}
   _throwMaxStrength: 700
   _minAngle: 45
@@ -423,6 +424,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a491cfe04d40878205e9bd17d6c0c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _state: {fileID: 7839711314533059614}
   _collider: {fileID: 2299200987580444294}
   _suckingStrength: 0.4
   _minDistanceToPickUp: 0.5
@@ -1011,6 +1013,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e0e552f174f49be968f4e6aadff6a27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _state: {fileID: 0}
 --- !u!114 &222220155105227160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6174,6 +6177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4de25f47d984485b7e8eb97b82e3f96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _state: {fileID: 0}
   _moveSpeed: 2
   _moveAccelerationDuration: 1
   _rotationSpeed: 40

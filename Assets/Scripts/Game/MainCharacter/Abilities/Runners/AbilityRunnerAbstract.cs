@@ -1,11 +1,14 @@
 using System;
 using Core.GameSystems.AbilitySystem.Model;
+using Game.MainCharacter.StatesMachine.States;
 using UnityEngine;
 
 namespace Game.MainCharacter.Abilities.Runners
 {
     public abstract class AbilityRunnerAbstract<T> : MonoBehaviour, IAbilityRunner where T : IAbilityModel
     {
+        [SerializeField] private MainCharacterStateAbstract _state;
+        
         public T Model { get; private set; }
 
         IAbilityModel IAbilityRunner.Model => Model;
@@ -22,12 +25,18 @@ namespace Game.MainCharacter.Abilities.Runners
         public void Run()
         {
             RunInternal();
+            
+            _state?.Enter();
+            
             OnRun?.Invoke();
         }
 
         public void Stop()
         {
             StopInternal();
+            
+            _state?.Exit();
+            
             OnStop?.Invoke(this);
         }
 
