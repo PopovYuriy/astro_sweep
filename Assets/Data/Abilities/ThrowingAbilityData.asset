@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: ThrowingAbilityData
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 4
-  <Mode>k__BackingField: 1
+  <AbilitiesToStop>k__BackingField:
+    _flags: 0
   <AbilitiesToBlock>k__BackingField:
     _flags: 5
   <ChargingData>k__BackingField:
-    <Value>k__BackingField: 10
+    <Value>k__BackingField: 5
     <ModifierType>k__BackingField: 3
