@@ -10,7 +10,7 @@ namespace Core.GameSystems.AbilitySystem.Data
     public sealed class AbilityData : ScriptableObject
     {
         [field: SerializeField] public AbilityType Type { get; private set; }
-        [field: SerializeField] public AbilityMode Mode { get; private set; }
+        [field: SerializeField] public EnumFlags<AbilityType> AbilitiesToStop { get; private set; }
         [field: SerializeField] public EnumFlags<AbilityType> AbilitiesToBlock { get; private set; }
         [field: SerializeField] public ChargingData ChargingData { get; private set; }
     }

@@ -1,6 +1,8 @@
+using Core.GameSystems.AbilitySystem.Model;
+
 namespace Game.MainCharacter.Abilities.Runners
 {
-    public sealed class ChargingAbilityRunner : AbilityRunnerAbstract
+    public sealed class ChargingAbilityRunner : AbilityRunnerAbstract<ChargingAbilityModel>
     {
         protected override void RunInternal()
         {

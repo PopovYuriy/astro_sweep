@@ -1,20 +1,22 @@
 using System;
-using Core.GameSystems.AbilitySystem.Data;
+using Core.GameSystems.AbilitySystem.Model;
 using UnityEngine;
 
 namespace Game.MainCharacter.Abilities.Runners
 {
-    public abstract class AbilityRunnerAbstract : MonoBehaviour
+    public abstract class AbilityRunnerAbstract<T> : MonoBehaviour, IAbilityRunner where T : IAbilityModel
     {
-        public AbilityData Data { get; private set; }
+        public T Model { get; private set; }
+
+        IAbilityModel IAbilityRunner.Model => Model;
 
         public event Action OnAct;
         public event Action OnRun;
-        public event Action<AbilityRunnerAbstract> OnStop;
+        public event Action<IAbilityRunner> OnStop;
 
-        public void SetData(AbilityData data)
+        public void SetModel(IAbilityModel model)
         {
-            Data = data;
+            Model = (T) model;
         }
         
         public void Run()

@@ -9,7 +9,7 @@ using Game.MainCharacter.Abilities.Runners;
 using Game.MainCharacter.StatesMachine;
 using Game.MainCharacter.StatesMachine.Enums;
 using Tools.CSharp;
-using Unity.VisualScripting;
+using Tools.Unity.SerializeInterface;
 using UnityEngine;
 using Zenject;
 
@@ -24,9 +24,6 @@ namespace Game.MainCharacter.Abilities
 
         private List<RunnerData> _currentRunners;
 
-        // private TypeToRunnerMap _currentRunner;
-        // private IAbilityModel _currentAbilityModel;
-
         [Inject]
         private void Construct(CharacterAbilitySystem abilitySystem)
         {
@@ -34,7 +31,7 @@ namespace Game.MainCharacter.Abilities
             foreach (var runnerMap in _runnersMap)
             {
                 var model = _abilitySystem.GetAbilityModel(runnerMap.Type);
-                runnerMap.Runner.SetData(model.Data);
+                (runnerMap.Runner as IAbilityRunner).SetModel(model);
             }
 
             _currentRunners = new List<RunnerData>();
@@ -65,8 +62,7 @@ namespace Game.MainCharacter.Abilities
             if (!abilityModel.IsAvailable || !abilityModel.IsReady)
                 return;
 
-            if (abilityModel.Data.Mode == AbilityMode.Single)
-                StopAllActiveRunners();
+            StopAbilities(abilityModel.Data.AbilitiesToStop.GetCollection());
             
             var runner = _runnersMap.FirstOrDefault(map => map.Type == type)?.Runner;
             if (runner == null)
@@ -75,11 +71,12 @@ namespace Game.MainCharacter.Abilities
                 return;
             }
 
-            RunAbilityAsync(type, runner, abilityModel).Run();
+            RunAbilityAsync(type, runner as IAbilityRunner, abilityModel).Run();
         }
 
-        private async Task RunAbilityAsync(AbilityType type, AbilityRunnerAbstract runner, IAbilityModel model)
+        private async Task RunAbilityAsync(AbilityType type, IAbilityRunner runner, IAbilityModel model)
         {
+            Debug.Log($"RunAbilityAsync :: {type}");
             var characterState = DetermineCharacterState(type);
             await _characterStateMachine.SetState(characterState);
             
@@ -100,7 +97,7 @@ namespace Game.MainCharacter.Abilities
             return _currentRunners.Any(data => data.Model.Data.AbilitiesToBlock.GetCollection().Contains(type));
         }
 
-        private void RunnerStopHandler(AbilityRunnerAbstract runner)
+        private void RunnerStopHandler(IAbilityRunner runner)
         {
             var runnerData = _currentRunners.First(data => data.Runner == runner);
             UnsubscribeAbility(runnerData);
@@ -115,13 +112,10 @@ namespace Game.MainCharacter.Abilities
             StopAndDeleteAbility(runnerData);
         }
 
-        private void StopAllActiveRunners()
+        private void StopAbilities(IEnumerable<AbilityType> abilityTypes)
         {
-            foreach (var runnerData in _currentRunners)
-                UnsubscribeAndStopAbility(runnerData);
-            
-            _currentRunners.Clear();
-            _characterStateMachine.SetState(MainCharacterState.Idle).Run();
+            foreach (var abilityType in abilityTypes)
+                TryStopActiveAbility(abilityType);
         }
 
         private bool TryStopActiveAbility(AbilityType type)
@@ -150,6 +144,7 @@ namespace Game.MainCharacter.Abilities
 
         private void UnsubscribeAndStopAbility(RunnerData data)
         {
+            Debug.Log($"Stop Ability :: {data.Model.Data.Type}");
             UnsubscribeAbility(data);
             data.Runner.Stop();
         }
@@ -178,21 +173,15 @@ namespace Game.MainCharacter.Abilities
         private sealed class TypeToRunnerMap
         {
             [field: SerializeField] public AbilityType Type { get; private set; }
-            [field: SerializeField] public AbilityRunnerAbstract Runner { get; private set; }
-
-            public TypeToRunnerMap(AbilityType type, AbilityRunnerAbstract runner)
-            {
-                Type = type;
-                Runner = runner;
-            }
+            [field: SerializeField, SerializeInterface(typeof(IAbilityRunner))] public Component Runner { get; private set; }
         }
 
         private sealed class RunnerData
         {
-            public AbilityRunnerAbstract Runner { get; }
+            public IAbilityRunner Runner { get; }
             public IAbilityModel Model { get; }
 
-            public RunnerData(AbilityRunnerAbstract runner, IAbilityModel model)
+            public RunnerData(IAbilityRunner runner, IAbilityModel model)
             {
                 Runner = runner;
                 Model = model;

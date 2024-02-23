@@ -1,3 +1,4 @@
+using Core.GameSystems.AbilitySystem.Model;
 using Core.GameSystems.InventorySystem;
 using Core.GameSystems.InventorySystem.Enums;
 using Core.GameSystems.InventorySystem.Model;
@@ -6,7 +7,7 @@ using Zenject;
 
 namespace Game.MainCharacter.Abilities.Runners
 {
-    public sealed class ThrowAbilityRunner : AbilityRunnerAbstract
+    public sealed class ThrowAbilityRunner : AbilityRunnerAbstract<ThrowingAbilityModel>
     {
         [SerializeField] private Transform _trajectionStartPosition;
 

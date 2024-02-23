@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d6a1dc343704daa99d925d1030a2d24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityRunner: {fileID: 1917858498335546425}
+  _abilityRunnerComponent: {fileID: 1917858498335546425}
 --- !u!1 &1629255347517358256
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,8 +153,6 @@ GameObject:
   - component: {fileID: 1809726633192388019}
   - component: {fileID: 933823112359415395}
   - component: {fileID: 4454671893007504664}
-  - component: {fileID: 4408392345078597675}
-  - component: {fileID: 210385251807509717}
   - component: {fileID: 7275514424152582756}
   - component: {fileID: 1824642154546494610}
   m_Layer: 6
@@ -260,35 +258,6 @@ CharacterController:
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &4408392345078597675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1765296915168502627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84d1648bf25849069de314bf41214572, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 2
-  _speedTweeningDuration: 1
-  _rotationSpeed: 90
-  _rotationTweeningDuration: 0.5
---- !u!114 &210385251807509717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1765296915168502627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0c23b932d3441e7b0e19b68ba933e29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _character: {fileID: 4408392345078597675}
 --- !u!135 &7275514424152582756
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -490,7 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d6a1dc343704daa99d925d1030a2d24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityRunner: {fileID: 7691812381264410807}
+  _abilityRunnerComponent: {fileID: 7691812381264410807}
 --- !u!1 &2375025025677212135
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,6 +592,7 @@ GameObject:
   - component: {fileID: 7405264118851685356}
   - component: {fileID: 4771515550088095842}
   - component: {fileID: 2832905587217944528}
+  - component: {fileID: 3106796515310354098}
   m_Layer: 6
   m_Name: AbilitiesRunner
   m_TagString: Untagged
@@ -646,6 +616,7 @@ Transform:
   - {fileID: 6880115362362221549}
   - {fileID: 7495840184764382526}
   - {fileID: 3943465605084081302}
+  - {fileID: 7213235890504202876}
   m_Father: {fileID: 8067781761931139400}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2465219780578514862
@@ -668,6 +639,8 @@ MonoBehaviour:
     <Runner>k__BackingField: {fileID: 1917858498335546425}
   - <Type>k__BackingField: 16
     <Runner>k__BackingField: {fileID: 8625742180804010365}
+  - <Type>k__BackingField: 32
+    <Runner>k__BackingField: {fileID: 9038031532297388988}
 --- !u!114 &7405264118851685356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -719,6 +692,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0e5150095c2437eb7dbe4ca8097b7f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _abilitiesController: {fileID: 2465219780578514862}
+--- !u!114 &3106796515310354098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4700689041058084205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0c23b932d3441e7b0e19b68ba933e29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _abilitiesController: {fileID: 2465219780578514862}
@@ -1037,7 +1023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d6a1dc343704daa99d925d1030a2d24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityRunner: {fileID: 8625742180804010365}
+  _abilityRunnerComponent: {fileID: 8625742180804010365}
 --- !u!1 &5384053833052532271
 GameObject:
   m_ObjectHideFlags: 0
@@ -6143,3 +6129,66 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7495840184764382526}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9091494739749651376
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7213235890504202876}
+  - component: {fileID: 9038031532297388988}
+  - component: {fileID: 1725667402874546472}
+  m_Layer: 6
+  m_Name: Moving
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7213235890504202876
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9091494739749651376}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3754089695931991367}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9038031532297388988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9091494739749651376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4de25f47d984485b7e8eb97b82e3f96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _moveSpeed: 2
+  _moveAccelerationDuration: 1
+  _rotationSpeed: 40
+  _rotationAccelerationDuration: 0.5
+  _characterController: {fileID: 4454671893007504664}
+--- !u!114 &1725667402874546472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9091494739749651376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d6a1dc343704daa99d925d1030a2d24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _abilityRunnerComponent: {fileID: 9038031532297388988}

@@ -1,22 +1,21 @@
+using Core.GameSystems.AbilitySystem.Model;
 using DG.Tweening;
 using UnityEngine;
 
-namespace Game.MainCharacter
+namespace Game.MainCharacter.Abilities.Runners
 {
-    [RequireComponent(typeof(CharacterController))]
-    public sealed class Character : MonoBehaviour
+    public sealed class MoveAbilityRunner : AbilityRunnerAbstract<MovingAbilityModel>
     {
-        private const float Gravity = -9.81f;
-        
-        [SerializeField] private float _speed;
-        [SerializeField] private float _speedTweeningDuration;
+        [SerializeField] private float _moveSpeed;
+        [SerializeField] private float _moveAccelerationDuration;
         
         [SerializeField] private float _rotationSpeed;
-        [SerializeField] private float _rotationTweeningDuration;
+        [SerializeField] private float _rotationAccelerationDuration;
 
-        private CharacterController _characterController;
-        private float _moveDirection;
-        private float _rotationDirection;
+        [SerializeField] private CharacterController _characterController;
+        
+        private bool _activated;
+        
         private float _velocity;
         
         private float _currentSpeed;
@@ -24,11 +23,6 @@ namespace Game.MainCharacter
         
         private Tween _speedTween;
         private Tween _rotationSpeedTween;
-        
-        private void Awake()
-        {
-            _characterController = GetComponent<CharacterController>();
-        }
 
         private void OnDestroy()
         {
@@ -38,33 +32,38 @@ namespace Game.MainCharacter
 
         private void FixedUpdate()
         {
-            if (_moveDirection != 0f)
+            if (!_activated)
+                return;
+            
+            if (Model.MoveDirection.y != 0f)
             {
-                if (_currentSpeed <= float.Epsilon)
+                if (_currentSpeed < _moveSpeed)
                 {
                     KillSpeedTween();
                     _speedTween = DOTween.To(() => _currentSpeed, 
                         speed => _currentSpeed = speed, 
-                        _speed, _speedTweeningDuration);
+                        _moveSpeed, _moveAccelerationDuration * (1 - _currentSpeed / _moveSpeed));
                 }
-                Move(_moveDirection);
+                
+                Move(Model.MoveDirection.y);
             }
             else
             {
                 _currentSpeed = 0f;
             }
             
-            if (_rotationDirection != 0f)
+            if (Model.MoveDirection.x != 0f)
             {
-                if (_currentRotationSpeed <= float.Epsilon)
+                if (_currentRotationSpeed < _rotationSpeed)
                 {
                     KillRotationSpeedTween();
                     _rotationSpeedTween = DOTween.To(() => _currentRotationSpeed, 
                         speed => _currentRotationSpeed = speed,
                         _rotationSpeed, 
-                        _rotationTweeningDuration);
+                        _rotationAccelerationDuration * (1 - _currentRotationSpeed / _rotationSpeed));
                 }
-                Rotate(_rotationDirection);
+                
+                Rotate(Model.MoveDirection.x);
             }
             else
             {
@@ -73,15 +72,16 @@ namespace Game.MainCharacter
 
             DoGravity();
         }
-
-        public void SetMoveDirection(float direction)
-        {
-            _moveDirection = direction;
-        }
         
-        public void SetRotationDirection(float direction)
+        protected override void RunInternal()
         {
-            _rotationDirection = direction;
+            _activated = true;
+            DispatchActed();
+        }
+
+        protected override void StopInternal()
+        {
+            _activated = false;
         }
 
         private void Move(float direction)
@@ -91,12 +91,12 @@ namespace Game.MainCharacter
 
         private void Rotate(float value)
         {
-            transform.Rotate(new Vector3(0f, value * _currentRotationSpeed * Time.fixedDeltaTime, 0f), Space.Self);
+            _characterController.transform.transform.Rotate(new Vector3(0f, value * _currentRotationSpeed * Time.fixedDeltaTime, 0f), Space.Self);
         }
 
         private void DoGravity()
         {
-            _velocity += Gravity * Time.fixedDeltaTime;
+            _velocity += Physics.gravity.y * Time.fixedDeltaTime;
             
             _characterController.Move(Vector3.up * _velocity * Time.fixedDeltaTime);
         }
