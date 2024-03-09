@@ -14,7 +14,7 @@ namespace Game.MainCharacter.StatesMachine
 
         private SimpleStateMachineAsync<MainCharacterState> _stateMachine;
 
-        public MainCharacterState CurrentState => _stateMachine.CurrentState;
+        public MainCharacterState CurrentState => _stateMachine.CurrentStateKey;
 
         private void Start()
         {

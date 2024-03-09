@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Core.GameSystems.AbilitySystem.Model;
 using Core.GameSystems.InventorySystem;
 using Core.GameSystems.InventorySystem.Enums;
 using Core.GameSystems.InventorySystem.Model;
@@ -8,7 +9,7 @@ using Zenject;
 
 namespace Game.MainCharacter.Abilities.Runners
 {
-    public sealed class VacuumAbilityRunner : AbilityRunnerAbstract
+    public sealed class VacuumAbilityRunner : AbilityRunnerAbstract<VacuumingAbilityModel>
     {
         [SerializeField] private Collider _collider;
         [SerializeField] private float _suckingStrength;

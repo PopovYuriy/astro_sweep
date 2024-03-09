@@ -4,5 +4,6 @@ namespace Core.GameSystems.InventorySystem.Enums
     {
         Ball = 0,
         Cola = 1,
+        Room1_Card = 2,
     }
 }

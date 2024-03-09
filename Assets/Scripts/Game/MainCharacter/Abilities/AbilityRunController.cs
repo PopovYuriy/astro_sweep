@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.GameSystems.AbilitySystem;
@@ -8,20 +9,20 @@ using Game.MainCharacter.Abilities.Runners;
 using Game.MainCharacter.StatesMachine;
 using Game.MainCharacter.StatesMachine.Enums;
 using Tools.CSharp;
+using Tools.Unity.SerializeInterface;
 using UnityEngine;
 using Zenject;
 
 namespace Game.MainCharacter.Abilities
 {
-    public class AbilityRunController : MonoBehaviour
+    public sealed class AbilityRunController : MonoBehaviour
     {
         [SerializeField] private MainCharacterStateMachine _characterStateMachine;
         [SerializeField] private TypeToRunnerMap[] _runnersMap;
 
         private CharacterAbilitySystem _abilitySystem;
 
-        private TypeToRunnerMap _currentRunner;
-        private IAbilityModel _currentAbilityModel;
+        private List<RunnerData> _currentRunners;
 
         [Inject]
         private void Construct(CharacterAbilitySystem abilitySystem)
@@ -30,104 +31,149 @@ namespace Game.MainCharacter.Abilities
             foreach (var runnerMap in _runnersMap)
             {
                 var model = _abilitySystem.GetAbilityModel(runnerMap.Type);
-                runnerMap.Runner.SetData(model.Data);
+                (runnerMap.Runner as IAbilityRunner).SetModel(model);
             }
+
+            _currentRunners = new List<RunnerData>();
         }
 
         private void OnDestroy()
         {
-            if (_currentRunner != null)
-                _currentRunner.Runner.OnStop -= RunnerStopHandler;
+            if (_currentRunners.Count > 0)
+            {
+                foreach (var runnerData in _currentRunners)
+                {
+                    runnerData.Runner.OnStop -= RunnerStopHandler;
+                    runnerData.Model.OnReadyChanged -= AbilityIsReadyChangedHandler;
+                }
+            }
+        }
 
-            if (_currentAbilityModel != null)
-                _currentAbilityModel.OnReadyChanged -= AbilityIsReadyChangedHandler;
+        public bool IsAbilityRan(AbilityType abilityType)
+        {
+            return _currentRunners.Any(data => data.Model.Data.Type == abilityType);
         }
 
         public void ProcessAbilityRunner(AbilityType type)
         {
-            if (_currentRunner == null)
-            {
-                var abilityModel = _abilitySystem.GetAbilityModel(type);
-                if (!abilityModel.IsAvailable || !abilityModel.IsReady)
-                    return;
-                
-                var runner = _runnersMap.FirstOrDefault(map => map.Type == type)?.Runner;
-                if (runner == null)
-                {
-                    Debug.LogWarning($"Here is no binded runner for ability type {type}");
-                    return;
-                }
+            if (TryStopActiveAbility(type))
+                return;
+            
+            if (CheckIsAbilityBlocked(type))
+                return;
+            
+            var abilityModel = _abilitySystem.GetAbilityModel(type);
+            
+            if (!abilityModel.IsAvailable || !abilityModel.IsReady)
+                return;
 
-                RunAbilityAsync(type, runner, abilityModel).Run();
-            }
-            else
+            StopAbilities(abilityModel.Data.AbilitiesToStop.GetCollection());
+            
+            var runner = _runnersMap.FirstOrDefault(map => map.Type == type)?.Runner;
+            if (runner == null)
             {
-                _currentRunner.Runner.Stop();
+                Debug.LogWarning($"Here is no binded runner for ability type {type}");
+                return;
             }
+
+            RunAbilityAsync(runner as IAbilityRunner, abilityModel).Run();
         }
 
-        private async Task RunAbilityAsync(AbilityType type, AbilityRunnerAbstract runner, IAbilityModel model)
+        private async Task RunAbilityAsync(IAbilityRunner runner, IAbilityModel model)
         {
-            var characterState = DetermineCharacterState(type);
-            await _characterStateMachine.SetState(characterState);
-            
-            _currentAbilityModel = model;
-            _currentAbilityModel.OnReadyChanged += AbilityIsReadyChangedHandler;
+            model.OnReadyChanged += AbilityIsReadyChangedHandler;
             
             runner.Run();
             runner.OnStop += RunnerStopHandler;
-            _currentRunner = new TypeToRunnerMap(type, runner);
+            
+            var runnerData = new RunnerData(runner, model);
+            _currentRunners.Add(runnerData);
+            
+            if (runner.State != MainCharacterState.None)
+                await _characterStateMachine.SetState(runner.State);
         }
 
-        private void RunnerStopHandler()
+        private bool CheckIsAbilityBlocked(AbilityType type)
         {
-            UnsubscribeCurrentAbility();
+            if (_currentRunners.Count == 0)
+                return false;
+
+            return _currentRunners.Any(data => data.Model.Data.AbilitiesToBlock.GetCollection().Contains(type));
+        }
+
+        private void RunnerStopHandler(IAbilityRunner runner)
+        {
+            var runnerData = _currentRunners.First(data => data.Runner == runner);
+            UnsubscribeAbility(runnerData);
         }
         
-        private void AbilityIsReadyChangedHandler()
+        private void AbilityIsReadyChangedHandler(IAbilityModel model)
         {
-            if (_currentAbilityModel.IsReady)
+            if (model.IsReady)
                 return;
             
-            var runner = _currentRunner.Runner;
-            UnsubscribeCurrentAbility();
-            runner.Stop();
+            var runnerData = _currentRunners.First(data => data.Model == model);
+            StopAndDeleteAbility(runnerData);
         }
 
-        private void UnsubscribeCurrentAbility()
+        private void StopAbilities(IEnumerable<AbilityType> abilityTypes)
         {
-            _currentRunner.Runner.OnStop -= RunnerStopHandler;
-            _currentRunner = null;
-            _characterStateMachine.SetState(MainCharacterState.Idle).Run();
-
-            _currentAbilityModel.OnReadyChanged -= AbilityIsReadyChangedHandler;
-            _currentAbilityModel = null;
+            foreach (var abilityType in abilityTypes)
+                TryStopActiveAbility(abilityType);
         }
 
-        private MainCharacterState DetermineCharacterState(AbilityType abilityType)
+        private bool TryStopActiveAbility(AbilityType type)
         {
-            switch (abilityType)
-            {
-                case AbilityType.Vacuuming:
-                    return MainCharacterState.Vacuuming;
-                case AbilityType.Throwing:
-                    return MainCharacterState.Throwing;
-                default:
-                    Debug.LogWarning($"There is no state for ability {abilityType}");
-                    return MainCharacterState.Idle;
-            }
+            if (_currentRunners.Count == 0)
+                return false;
+
+            var runnerData = _currentRunners.FirstOrDefault(data => data.Model.Data.Type == type);
+            if (runnerData == null)
+                return false;
+
+            StopAndDeleteAbility(runnerData);
+
+            return true;
         }
-        
+
+        private void StopAndDeleteAbility(RunnerData data)
+        {
+            UnsubscribeAndStopAbility(data);
+
+            _currentRunners.Remove(data);
+            
+            if (_currentRunners.Count == 0)
+                _characterStateMachine.SetState(MainCharacterState.Idle).Run();
+        }
+
+        private void UnsubscribeAndStopAbility(RunnerData data)
+        {
+            UnsubscribeAbility(data);
+            data.Runner.Stop();
+        }
+
+        private void UnsubscribeAbility(RunnerData data)
+        {
+            data.Runner.OnStop -= RunnerStopHandler;
+            data.Model.OnReadyChanged -= AbilityIsReadyChangedHandler;
+        }
+
         [Serializable]
         private sealed class TypeToRunnerMap
         {
             [field: SerializeField] public AbilityType Type { get; private set; }
-            [field: SerializeField] public AbilityRunnerAbstract Runner { get; private set; }
+            [field: SerializeField, SerializeInterface(typeof(IAbilityRunner))] public Component Runner { get; private set; }
+        }
 
-            public TypeToRunnerMap(AbilityType type, AbilityRunnerAbstract runner)
+        private sealed class RunnerData
+        {
+            public IAbilityRunner Runner { get; }
+            public IAbilityModel Model { get; }
+
+            public RunnerData(IAbilityRunner runner, IAbilityModel model)
             {
-                Type = type;
                 Runner = runner;
+                Model = model;
             }
         }
     }

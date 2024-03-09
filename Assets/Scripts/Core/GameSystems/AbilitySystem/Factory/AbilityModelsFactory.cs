@@ -28,8 +28,10 @@ namespace Core.GameSystems.AbilitySystem.Factory
                     return InitializeModel(abilityType, new ThrowingAbilityModel());
                 case AbilityType.Charging:
                     return InitializeModel(abilityType, new ChargingAbilityModel());
+                case AbilityType.Moving:
+                    return InitializeModel(abilityType, new MovingAbilityModel());
                 default:
-                    throw new ArgumentException($"Can't create ability model by type {abilityType}");
+                    throw new ArgumentException($"Can't create ability model by type {abilityType.ToString()}");
             }
         }
 

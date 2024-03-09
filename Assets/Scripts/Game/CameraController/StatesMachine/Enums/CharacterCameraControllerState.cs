@@ -4,5 +4,6 @@ namespace Game.CameraController.StatesMachine.Enums
     {
         FirstPerson = 1,
         ThirdPerson = 2,
+        Aim = 3
     }
 }
