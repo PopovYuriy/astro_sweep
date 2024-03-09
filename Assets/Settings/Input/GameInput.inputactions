@@ -16,17 +16,44 @@
                 },
                 {
                     "name": "CameraRotation",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "032b97ef-7001-44ff-9683-60f89d700205",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Aim",
+                    "type": "Button",
+                    "id": "466fb391-763d-49a9-980f-dfd72ad7ba2b",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Abilities",
+                    "name": "Ability_1",
                     "type": "Button",
-                    "id": "446bcac1-e652-4f1d-ae95-446dfa7ae938",
+                    "id": "6816197d-217b-4ff7-9977-2c2d0994650b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Ability_2",
+                    "type": "Button",
+                    "id": "497371cd-7e6c-4d1b-bf4c-4b3d197ec334",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Ability_3",
+                    "type": "Button",
+                    "id": "e1c4ade9-256b-4008-88e1-4ec1b6ab3f21",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -146,9 +173,9 @@
                 },
                 {
                     "name": "",
-                    "id": "b65267d2-ad38-42ef-a804-c792fa68a110",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "Hold",
+                    "id": "acc7c3d4-e4f1-4dcc-9576-0c8eda27e748",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
                     "processors": "",
                     "groups": "Keyboard and mouse",
                     "action": "CameraRotation",
@@ -157,34 +184,45 @@
                 },
                 {
                     "name": "",
-                    "id": "312ea02b-c022-41e3-bcf8-ef8f25da398c",
+                    "id": "2b52ef16-ba42-4713-af82-6ddb839bb82e",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard and mouse",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "95dc3918-6e9d-4edb-ae51-2389a9c41b43",
                     "path": "<Keyboard>/1",
                     "interactions": "Tap",
                     "processors": "",
                     "groups": "",
-                    "action": "Abilities",
+                    "action": "Ability_1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "6614cff4-7263-4b28-b6db-d1ab930be6ea",
+                    "id": "b33171ae-451c-4210-9553-1bf7606a7061",
                     "path": "<Keyboard>/2",
                     "interactions": "Tap",
                     "processors": "",
                     "groups": "",
-                    "action": "Abilities",
+                    "action": "Ability_2",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "bfed182b-7860-4f25-b1b6-04ac4f31ed38",
+                    "id": "9a2ad765-383b-4d28-8b34-08d15c039849",
                     "path": "<Keyboard>/3",
                     "interactions": "Tap",
                     "processors": "",
                     "groups": "",
-                    "action": "Abilities",
+                    "action": "Ability_3",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
