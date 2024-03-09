@@ -1,6 +1,7 @@
 using Core.GameSystems.AbilitySystem;
 using Core.GameSystems.AbilitySystem.Enums;
 using Core.GameSystems.AbilitySystem.Model;
+using Game.MainCharacter.Input;
 using UnityEngine;
 using Zenject;
 
@@ -11,42 +12,39 @@ namespace Game.MainCharacter.Abilities.Detectors
         [SerializeField] private AbilityRunController _abilitiesController;
         
         private MovingAbilityModel _movingAbilityModel;
-        
-        private GameInput _gameInput;
-        private Vector2 _previousDirection;
+        private PlayerInputController _inputController;
 
         [Inject]
-        private void Construct(CharacterAbilitySystem abilitySystem)
+        private void Construct(CharacterAbilitySystem abilitySystem, PlayerInputController inputController)
         {
             _movingAbilityModel = (MovingAbilityModel) abilitySystem.GetAbilityModel(AbilityType.Moving);
+            _inputController = inputController;
         }
 
-        private void Awake()
+        private void Start()
         {
-            _gameInput = new GameInput();
-            _gameInput.Enable();
+            _inputController.OnMoveInput += MoveInputHandler;
         }
 
-        private void FixedUpdate()
+        private void OnDestroy()
         {
-            var moveDirection = _gameInput.Gameplay.Movement.ReadValue<Vector2>();
-            
-            if (moveDirection == _previousDirection)
-                return;
+            _inputController.OnMoveInput -= MoveInputHandler;
+        }
 
-            if (moveDirection == Vector2.zero)
-            {
-                _abilitiesController.ProcessAbilityRunner(AbilityType.Moving);
-                _movingAbilityModel.MoveDirection = Vector2.zero;
-                _previousDirection = Vector2.zero;
-            }
-            else if (_previousDirection == Vector2.zero)
-            {
-                _abilitiesController.ProcessAbilityRunner(AbilityType.Moving);
-            }
+        private void MoveInputHandler(Vector2 direction)
+        {
+            _movingAbilityModel.MoveDirection = direction;
             
-            _previousDirection = moveDirection;
-            _movingAbilityModel.MoveDirection = moveDirection;
+            if (direction == Vector2.zero)
+            {
+                if (_abilitiesController.IsAbilityRan(AbilityType.Moving))
+                    _abilitiesController.ProcessAbilityRunner(AbilityType.Moving);
+            }
+            else
+            {
+                if (!_abilitiesController.IsAbilityRan(AbilityType.Moving))
+                    _abilitiesController.ProcessAbilityRunner(AbilityType.Moving);
+            }
         }
     }
 }

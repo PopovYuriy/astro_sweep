@@ -49,6 +49,11 @@ namespace Game.MainCharacter.Abilities
             }
         }
 
+        public bool IsAbilityRan(AbilityType abilityType)
+        {
+            return _currentRunners.Any(data => data.Model.Data.Type == abilityType);
+        }
+
         public void ProcessAbilityRunner(AbilityType type)
         {
             if (TryStopActiveAbility(type))
