@@ -11,7 +11,8 @@ namespace Core.Common.StateMachine.SimpleSMAsync
         private Dictionary<T, IStateAsync> _states;
         private IStateAsync _currentState;
 
-        public T CurrentState => _states.First(state => state.Value == _currentState).Key;
+        public T CurrentStateKey => _states.First(state => state.Value == _currentState).Key;
+        public IStateAsync CurrentState => _currentState;
 
         public SimpleStateMachineAsync()
         {

@@ -88,6 +88,9 @@ namespace Game.MainCharacter.Abilities
             
             var runnerData = new RunnerData(runner, model);
             _currentRunners.Add(runnerData);
+            
+            if (runner.State != MainCharacterState.None)
+                await _characterStateMachine.SetState(runner.State);
         }
 
         private bool CheckIsAbilityBlocked(AbilityType type)

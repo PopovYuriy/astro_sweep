@@ -15,6 +15,7 @@ namespace Game.MainCharacter.Input
 
         private IInputActionController<Vector2> _movementInputAction;
         private IInputActionController<bool> _aimInputAction;
+        private IInputActionController<bool> _fireInputAction;
         private IInputActionController<Vector2> _cameraRotationInputAction;
         private IInputActionController<bool> _abilityOneAction;
         private IInputActionController<bool> _abilityTwoAction;
@@ -22,6 +23,7 @@ namespace Game.MainCharacter.Input
         
         public event Action<Vector2> OnMoveInput;
         public event Action<bool> OnAimInput;
+        public event Action<bool> OnFireInput;
         public event Action<Vector2> OnCameraRotationInput;
         public event Action<AbilityButtonId> OnAbilityInput;
 
@@ -39,6 +41,9 @@ namespace Game.MainCharacter.Input
 
             _aimInputAction = new ButtonInputActionController(_playerInput.actions[_gameInput.Gameplay.Aim.name]);
             _aimInputAction.OnPerformed += AimActionHandler;
+
+            _fireInputAction = new ButtonInputActionController(_playerInput.actions[_gameInput.Gameplay.Fire.name]);
+            _fireInputAction.OnPerformed += FireActionHandler;
             
             _cameraRotationInputAction = new DirectionInputActionController(_playerInput.actions[_gameInput.Gameplay.CameraRotation.name]);
             _cameraRotationInputAction.OnPerformed += CameraRotationActionHandler;
@@ -57,6 +62,7 @@ namespace Game.MainCharacter.Input
         {
             _movementInputAction.Dispose();
             _aimInputAction.Dispose();
+            _fireInputAction.Dispose();
             _cameraRotationInputAction.Dispose();
             _abilityOneAction.Dispose();
             _abilityTwoAction.Dispose();
@@ -64,6 +70,7 @@ namespace Game.MainCharacter.Input
             
             _movementInputAction.OnPerformed -= MovementActionHandler;
             _aimInputAction.OnPerformed -= AimActionHandler;
+            _fireInputAction.OnPerformed -= FireActionHandler;
             _cameraRotationInputAction.OnPerformed -= CameraRotationActionHandler;
             _abilityOneAction.OnPerformed -= AbilityOneActionHandler;
             _abilityTwoAction.OnPerformed -= AbilityTwoActionHandler;
@@ -78,6 +85,11 @@ namespace Game.MainCharacter.Input
         private void AimActionHandler(bool isPressed)
         {
             OnAimInput?.Invoke(isPressed);
+        }
+        
+        private void FireActionHandler(bool isPressed)
+        {
+            OnFireInput?.Invoke(isPressed);
         }
         
         private void CameraRotationActionHandler(Vector2 direction)

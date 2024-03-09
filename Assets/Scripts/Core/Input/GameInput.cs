@@ -55,6 +55,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""d61f0fc7-3bda-4f1b-bee4-0400ed395b34"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Ability_1"",
                     ""type"": ""Button"",
                     ""id"": ""6816197d-217b-4ff7-9977-2c2d0994650b"",
@@ -247,6 +256,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""Ability_3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3f43498c-aaf5-4ab9-9a69-3c64e730fd4c"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard and mouse"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -281,6 +301,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_Gameplay_Movement = m_Gameplay.FindAction("Movement", throwIfNotFound: true);
         m_Gameplay_CameraRotation = m_Gameplay.FindAction("CameraRotation", throwIfNotFound: true);
         m_Gameplay_Aim = m_Gameplay.FindAction("Aim", throwIfNotFound: true);
+        m_Gameplay_Fire = m_Gameplay.FindAction("Fire", throwIfNotFound: true);
         m_Gameplay_Ability_1 = m_Gameplay.FindAction("Ability_1", throwIfNotFound: true);
         m_Gameplay_Ability_2 = m_Gameplay.FindAction("Ability_2", throwIfNotFound: true);
         m_Gameplay_Ability_3 = m_Gameplay.FindAction("Ability_3", throwIfNotFound: true);
@@ -350,6 +371,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Movement;
     private readonly InputAction m_Gameplay_CameraRotation;
     private readonly InputAction m_Gameplay_Aim;
+    private readonly InputAction m_Gameplay_Fire;
     private readonly InputAction m_Gameplay_Ability_1;
     private readonly InputAction m_Gameplay_Ability_2;
     private readonly InputAction m_Gameplay_Ability_3;
@@ -360,6 +382,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Gameplay_Movement;
         public InputAction @CameraRotation => m_Wrapper.m_Gameplay_CameraRotation;
         public InputAction @Aim => m_Wrapper.m_Gameplay_Aim;
+        public InputAction @Fire => m_Wrapper.m_Gameplay_Fire;
         public InputAction @Ability_1 => m_Wrapper.m_Gameplay_Ability_1;
         public InputAction @Ability_2 => m_Wrapper.m_Gameplay_Ability_2;
         public InputAction @Ability_3 => m_Wrapper.m_Gameplay_Ability_3;
@@ -381,6 +404,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
             @Ability_1.started += instance.OnAbility_1;
             @Ability_1.performed += instance.OnAbility_1;
             @Ability_1.canceled += instance.OnAbility_1;
@@ -403,6 +429,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
             @Ability_1.started -= instance.OnAbility_1;
             @Ability_1.performed -= instance.OnAbility_1;
             @Ability_1.canceled -= instance.OnAbility_1;
@@ -481,6 +510,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnCameraRotation(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+        void OnFire(InputAction.CallbackContext context);
         void OnAbility_1(InputAction.CallbackContext context);
         void OnAbility_2(InputAction.CallbackContext context);
         void OnAbility_3(InputAction.CallbackContext context);

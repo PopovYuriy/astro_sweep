@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Cinemachine;
 using Core.Common.StateMachine.SimpleSMAsync;
 using Game.CameraController.StatesMachine.Enums;
 using Game.CameraController.StatesMachine.States;
@@ -13,6 +14,9 @@ namespace Game.CameraController.StatesMachine
         [SerializeField] private StateMap[] _states;
 
         private SimpleStateMachineAsync<CharacterCameraControllerState> _stateMachine;
+
+        public CinemachineVirtualCameraBase CurrentCamera =>
+            ((CharacterCameraState) _stateMachine.CurrentState).Camera;
 
         private void Awake()
         {
@@ -33,7 +37,7 @@ namespace Game.CameraController.StatesMachine
         private sealed class StateMap
         {
             [field: SerializeField] public CharacterCameraControllerState StateKey { get; private set; }
-            [field: SerializeField] public CharacterCameraStateAbstract State { get; private set; }
+            [field: SerializeField] public CharacterCameraState State { get; private set; }
         } 
     }
 }

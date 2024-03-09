@@ -33,6 +33,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "d61f0fc7-3bda-4f1b-bee4-0400ed395b34",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Ability_1",
                     "type": "Button",
                     "id": "6816197d-217b-4ff7-9977-2c2d0994650b",
@@ -223,6 +232,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Ability_3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3f43498c-aaf5-4ab9-9a69-3c64e730fd4c",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard and mouse",
+                    "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

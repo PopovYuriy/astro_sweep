@@ -2,9 +2,10 @@ namespace Game.MainCharacter.StatesMachine.Enums
 {
     public enum MainCharacterState : byte
     {
-        Idle = 0,
-        Vacuuming = 1,
-        Throwing = 2,
-        Blowing = 3
+        None = 0,
+        Idle = 1,
+        Vacuuming = 2,
+        Throwing = 3,
+        Blowing = 4
     }
 }
