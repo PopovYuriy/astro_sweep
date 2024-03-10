@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using Core.GameSystems.AbilitySystem.Model;
 using Core.GameSystems.InventorySystem;
-using Core.GameSystems.InventorySystem.Enums;
-using Core.GameSystems.InventorySystem.Model;
 using Game.Environment.InteractiveItems;
 using UnityEngine;
 using Zenject;
@@ -15,7 +13,7 @@ namespace Game.MainCharacter.Abilities.Runners
         [SerializeField] private float _suckingStrength;
         [SerializeField] private float _minDistanceToPickUp;
 
-        private InventoryContainerModel _inventoryContainer;
+        private CharacterInventorySystem _characterInventorySystem;
         
         private bool _activated;
         private List<VacuumableItem> _objectsToVacuuming;
@@ -24,7 +22,7 @@ namespace Game.MainCharacter.Abilities.Runners
         [Inject]
         private void Construct(CharacterInventorySystem characterInventorySystem)
         {
-            _inventoryContainer = characterInventorySystem.GetInventoryContainer(ItemCollectionType.Throwable);
+            _characterInventorySystem = characterInventorySystem;
         }
 
         private void Start()
@@ -76,7 +74,7 @@ namespace Game.MainCharacter.Abilities.Runners
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.TryGetComponent(out VacuumableItem item) && item.Data.CollectionType == ItemCollectionType.Throwable)
+            if (other.TryGetComponent(out VacuumableItem item))
                 _objectsToVacuuming.Add(item);
         }
         
@@ -92,9 +90,12 @@ namespace Game.MainCharacter.Abilities.Runners
             
             if (distance < _minDistanceToPickUp)
             {
-                _inventoryContainer.TryAddItem(item.Data);
-                Destroy(item.gameObject);
-                _objectsToDelete.Add(item);
+                var inventoryContainer = _characterInventorySystem.GetInventoryContainer(item.Data.CollectionType);
+                if (inventoryContainer.TryAddItem(item.Data))
+                {
+                    Destroy(item.gameObject);
+                    _objectsToDelete.Add(item);
+                }
             }
             else
             {

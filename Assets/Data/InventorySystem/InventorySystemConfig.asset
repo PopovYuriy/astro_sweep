@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp:Core.GameSystems.InventorySystem.Data:InventorySystemConfig
   <ContainerConfigs>k__BackingField:
   - {fileID: 11400000, guid: d4e0294485da44b13ba57497e784dd37, type: 2}
+  - {fileID: 11400000, guid: 87ceb2c932d4e407793374599595e1f7, type: 2}
