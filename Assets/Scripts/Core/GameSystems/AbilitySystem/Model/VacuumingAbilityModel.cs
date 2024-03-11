@@ -1,16 +1,16 @@
 using System;
 using Core.GameSystems.AbilitySystem.Data;
-using Core.GameSystems.InventorySystem;
-using Core.GameSystems.InventorySystem.Enums;
-using Core.GameSystems.InventorySystem.Model;
+using Core.GameSystems.StatsSystem;
+using Core.GameSystems.StatsSystem.Enum;
+using Core.GameSystems.StatsSystem.Model;
 using Zenject;
 
 namespace Core.GameSystems.AbilitySystem.Model
 {
     public sealed class VacuumingAbilityModel : IAbilityModel
     {
-        private InventoryContainerModel _characterInventoryContainer;
         private bool _isInitialized;
+        private IStatModel _chargeStatModel;
         
         public AbilityData Data { get; private set; }
         public bool IsAvailable { get; private set; }
@@ -19,9 +19,9 @@ namespace Core.GameSystems.AbilitySystem.Model
         public event Action<IAbilityModel> OnReadyChanged;
 
         [Inject]
-        private void Construct(CharacterInventorySystem characterInventorySystem)
+        private void Construct(CharacterStatsSystem statsSystem)
         {
-            _characterInventoryContainer = characterInventorySystem.GetInventoryContainer(ItemCollectionType.Throwable);
+            _chargeStatModel = statsSystem.GetStatModel(StatType.Charge);
         }
 
         public void Initialize(AbilityData data)
@@ -35,22 +35,15 @@ namespace Core.GameSystems.AbilitySystem.Model
             IsAvailable = true;
             DetermineIsReady(false);
             
-            _characterInventoryContainer.OnItemAdded += InventoryItemAddedHandler;
-            _characterInventoryContainer.OnItemPulled += InventoryItemAPulledHandler;
+            _chargeStatModel.OnValueChanged += ChargeValueChangedHandler;
         }
 
         public void Dispose()
         {
-            _characterInventoryContainer.OnItemAdded -= InventoryItemAddedHandler;
-            _characterInventoryContainer.OnItemPulled -= InventoryItemAPulledHandler;
-        }
-
-        private void InventoryItemAddedHandler(ItemModel item)
-        {
-            DetermineIsReady(true);
+            _chargeStatModel.OnValueChanged -= ChargeValueChangedHandler;
         }
         
-        private void InventoryItemAPulledHandler(ItemModel item)
+        private void ChargeValueChangedHandler()
         {
             DetermineIsReady(true);
         }
@@ -58,7 +51,7 @@ namespace Core.GameSystems.AbilitySystem.Model
         private void DetermineIsReady(bool needDispatchEvent)
         {
             var previousValue = IsReady;
-            IsReady = _characterInventoryContainer.HasFreeSpace;
+            IsReady = _chargeStatModel.Value >= Data.ChargingData.Value;
             
             if (needDispatchEvent && previousValue != IsReady)
                 OnReadyChanged?.Invoke(this);

@@ -10,8 +10,8 @@ namespace Core.GameSystems.InventorySystem.Model
         private List<ItemModel> _items;
 
         public int Capacity { get; private set; }
-        public int Count => _items.Count;
-        public bool HasFreeSpace => _items.Count < Capacity;
+        public int Count => _items.Sum(model => model.Count);
+        public bool HasFreeSpace => Count < Capacity;
 
         public event Action<ItemModel> OnItemAdded;
         public event Action<ItemModel> OnItemPulled;

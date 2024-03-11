@@ -365,6 +365,19 @@ MonoBehaviour:
     y: 30
     width: 300
     height: 20
+  _inventoryLabelRect:
+    serializedVersion: 2
+    x: 0
+    y: 60
+    width: 300
+    height: 20
+  _inventoryContainerInitialRect:
+    serializedVersion: 2
+    x: 20
+    y: 95
+    width: 300
+    height: 20
+  _inventorySpacing: 35
   _textStyle:
     m_Name: 
     m_Normal:
