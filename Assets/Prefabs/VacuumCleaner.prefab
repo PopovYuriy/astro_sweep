@@ -351,31 +351,31 @@ MonoBehaviour:
     serializedVersion: 2
     x: 10
     y: 25
-    width: 300
+    width: 500
     height: 200
   _stateLabelRect:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 300
+    width: 500
     height: 20
   _chargeLabelRect:
     serializedVersion: 2
     x: 0
     y: 30
-    width: 300
+    width: 500
     height: 20
   _inventoryLabelRect:
     serializedVersion: 2
     x: 0
     y: 60
-    width: 300
+    width: 500
     height: 20
   _inventoryContainerInitialRect:
     serializedVersion: 2
     x: 20
     y: 95
-    width: 300
+    width: 500
     height: 20
   _inventorySpacing: 35
   _textStyle:
@@ -6198,9 +6198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <State>k__BackingField: 0
-  _moveSpeed: 2
   _moveAccelerationDuration: 1
-  _rotationSpeed: 40
   _rotationAccelerationDuration: 0.5
   _characterController: {fileID: 4454671893007504664}
 --- !u!114 &1725667402874546472

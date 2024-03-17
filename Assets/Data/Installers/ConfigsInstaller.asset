@@ -16,3 +16,4 @@ MonoBehaviour:
     type: 2}
   _abilitiesConfig: {fileID: 11400000, guid: 88f158c2b2a1f4560aee1b6572fadfb1, type: 2}
   _statsConfig: {fileID: 11400000, guid: 5dacbb325ec004d1ea6300877284ea7d, type: 2}
+  _upgradingConfig: {fileID: 11400000, guid: 2ce457bd6254842f4a85b2c667ad5055, type: 2}

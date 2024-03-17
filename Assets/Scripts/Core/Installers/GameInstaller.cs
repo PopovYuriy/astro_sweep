@@ -4,6 +4,7 @@ using Core.GameSystems.AbilitySystem.Factory;
 using Core.GameSystems.AbilitySystem.Model;
 using Core.GameSystems.InventorySystem;
 using Core.GameSystems.StatsSystem;
+using Core.GameSystems.UpgradingSystem;
 using Zenject;
 
 namespace Core.Installers
@@ -22,7 +23,7 @@ namespace Core.Installers
             
             Container.BindFactory<AbilityType, IAbilityModel, AbilityModelsFactory>().FromFactory<CharacterAbilityModelsFactory>();
             Container.Bind<CharacterAbilitySystem>().AsSingle().Lazy();
-            
+            Container.Bind(typeof(MainCharacterUpgradingSystem), typeof(IInitializable)).To<MainCharacterUpgradingSystem>().AsSingle().NonLazy();
         } 
     }
 }

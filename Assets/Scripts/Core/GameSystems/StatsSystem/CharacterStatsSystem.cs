@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.GameSystems.StatsSystem.Data;
@@ -17,10 +18,17 @@ namespace Core.GameSystems.StatsSystem
             _stats = new List<IStatModel>(config.Stats.Length);
             
             foreach (var statData in config.Stats)
-                _stats.Add(new StatModel(statData.Type, statData.Value, statData.MaxValue));
+                _stats.Add(new StatModel(statData.Id, statData.BaseValue));
         }
 
-        public IStatModel GetStatModel(StatType type) => _stats.First(s => s.Type == type);
+        public IStatModel GetStatModel(StatId id)
+        {
+            var model = _stats.FirstOrDefault(s => s.Id == id);
+            if (model == null)
+                throw new ArgumentException($"Model with id {id} has not found");
+            
+            return model;
+        }
 
         public void Tick()
         {

@@ -1,4 +1,4 @@
-using Core.GameSystems.AbilitySystem.Model;
+using Core.GameSystems.AbilitySystem.Data;
 using Core.GameSystems.StatsSystem;
 using Core.GameSystems.StatsSystem.Enum;
 using Core.GameSystems.StatsSystem.Model;
@@ -17,7 +17,11 @@ namespace Game.MainCharacter.Abilities.Common
 
         private CharacterStatsSystem _statsSystem;
         private IStatModel _chargeStatModel;
+        private IStatModel _chargingEfficiencyStatModel;
+        private IStatModel _consumingEfficiencyStatModel;
         private IStatModifier _chargeStatModifier;
+
+        private ChargingData _data;
 
         private IAbilityRunner _abilityRunner;
 
@@ -31,10 +35,11 @@ namespace Game.MainCharacter.Abilities.Common
         {
             _abilityRunner = _abilityRunnerComponent as IAbilityRunner;
             
-            _chargeStatModel = _statsSystem.GetStatModel(StatType.Charge);
-            var data = _abilityRunner.Model.Data.ChargingData;
-            _chargeStatModifier = ModifierFactory.CreateModifier(data.ModifierType, data.Value);
-            
+            _chargeStatModel = _statsSystem.GetStatModel(StatId.BatteryCharge);
+            _chargingEfficiencyStatModel = _statsSystem.GetStatModel(StatId.BatteryChargingEfficiency);
+            _consumingEfficiencyStatModel = _statsSystem.GetStatModel(StatId.BatteryConsumingEfficiency);
+            _data = _abilityRunner.Model.Data.ChargingData;
+
             _abilityRunner.OnAct += AbilityActHandler;
             _abilityRunner.OnStop += AbilityStopHandler;
         }
@@ -47,6 +52,8 @@ namespace Game.MainCharacter.Abilities.Common
 
         private void AbilityActHandler()
         {
+            _chargeStatModifier = ModifierFactory.CreateModifier(_data.ModifierType, DetermineModifierValue());
+            
             if (_chargeStatModifier.IsTimeBased)
                 _chargeStatModel.AddModifier(_chargeStatModifier);
             else
@@ -57,6 +64,17 @@ namespace Game.MainCharacter.Abilities.Common
         {
             if (_chargeStatModifier.IsTimeBased)
                 _chargeStatModel.RemoveModifier(_chargeStatModifier);
+        }
+
+        private float DetermineModifierValue()
+        {
+            float factor;
+            if (_data.ModifierType == ModifierType.DecreasePerSec || _data.ModifierType == ModifierType.OnceDecrease)
+                factor = _consumingEfficiencyStatModel.Value;
+            else
+                factor = _chargingEfficiencyStatModel.Value;
+
+            return factor * _data.Value;
         }
     }
 }

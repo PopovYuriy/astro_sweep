@@ -12,26 +12,36 @@ namespace Core.GameSystems.StatsSystem.Model
         private List<IStatModifier> _modifiers;
         private List<IStatModifier> _tickableModifiers;
         
-        public StatType Type { get; }
+        public StatId Id { get; }
         public float Value => CalculateValue();
-        public float MaxValue { get; }
-
         public event Action OnValueChanged;
 
-        public StatModel(StatType type, float baseValue, float maxValue)
+        public StatModel(StatId id, float baseValue)
         {
-            Type = type;
+            Id = id;
             _baseValue = baseValue;
-            MaxValue = maxValue;
             _modifiers = new List<IStatModifier>();
             _tickableModifiers = new List<IStatModifier>();
+        }
+
+        public void UpdateBaseValue(float value)
+        {
+            if (value < 0)
+                throw new ArgumentException("Value can't be less 0");
+            
+            if (Math.Abs(_baseValue - value) < float.Epsilon)
+                return;
+
+            _baseValue = value;
+            OnValueChanged?.Invoke();
         }
 
         public void ApplyPermanentModifier(IStatModifier modifier)
         {
             var previousValue = _baseValue;
+            var nextValue = modifier.Apply(_baseValue);
             
-            _baseValue = Mathf.Clamp(modifier.Apply(_baseValue), 0f, MaxValue);
+            _baseValue = Mathf.Clamp(nextValue, 0f, nextValue);
             
             if (Math.Abs(previousValue - Value) > float.Epsilon)
                 OnValueChanged?.Invoke();
@@ -90,7 +100,7 @@ namespace Core.GameSystems.StatsSystem.Model
                 value = modifier.Apply(value);
 
             value = (float) Math.Round(value, 4);
-            return Mathf.Clamp(value, 0f, MaxValue);;
+            return Mathf.Clamp(value, 0f, value);;
         }
     }
 }

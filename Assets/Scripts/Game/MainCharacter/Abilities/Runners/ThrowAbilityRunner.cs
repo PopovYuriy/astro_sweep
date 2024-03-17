@@ -79,7 +79,7 @@ namespace Game.MainCharacter.Abilities.Runners
             var currentVelocity = throwItem.transform.forward * strength;
             rb.AddForce(currentVelocity, ForceMode.Impulse);
             
-            _inventoryContainer.TryPullItem(currentObjectData);
+            _inventoryContainer.PullItems(currentObjectData.ItemType, 1);
             
             Stop();
         }

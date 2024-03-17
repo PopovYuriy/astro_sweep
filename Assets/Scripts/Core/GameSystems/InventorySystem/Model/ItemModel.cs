@@ -25,15 +25,16 @@ namespace Core.GameSystems.InventorySystem.Model
             Count += count;
         }
 
-        public void PullItem()
+        public void PullItems(int count)
         {
-            if (Count == 0)
+            var newCount = Count - count;
+            if (newCount < 0)
             {
-                Debug.LogError("Can't pull item. Count is already 0");
+                Debug.LogError("Can't pull items. New count is less then 0");
                 return;
             }
 
-            Count--;
+            Count -= count;
         }
     }
 }

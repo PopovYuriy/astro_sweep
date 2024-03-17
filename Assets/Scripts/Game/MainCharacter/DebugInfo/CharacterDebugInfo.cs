@@ -27,21 +27,21 @@ namespace Game.MainCharacter.DebugInfo
         [SerializeField] private GUIStyle _textStyle;
 
         private Dictionary<string, InventoryContainerModel> _inventoryModelsMap;
-        private CharacterStatsSystem _statsSystem;
         private IStatModel _chargeStat;
+        private IStatModel _capacityStat;
         private bool _initialized;
 
         [Inject]
         private void Construct(CharacterStatsSystem statsSystem, CharacterInventorySystem inventorySystem)
         {
-            _statsSystem = statsSystem;
             var names = Enum.GetNames(typeof(ItemCollectionType));
             _inventoryModelsMap = names.Select(name => 
                     new KeyValuePair<string, InventoryContainerModel>
                         (name, inventorySystem.GetInventoryContainer((ItemCollectionType) Enum.Parse(typeof(ItemCollectionType), name))))
                 .ToDictionary(kv => kv.Key, kv => kv.Value);
             
-            _chargeStat = _statsSystem.GetStatModel(StatType.Charge);
+            _chargeStat = statsSystem.GetStatModel(StatId.BatteryCharge);
+            _capacityStat = statsSystem.GetStatModel(StatId.BatteryCapacity);
             _initialized = true;
         }
         
@@ -53,7 +53,7 @@ namespace Game.MainCharacter.DebugInfo
             GUI.BeginGroup(_windowRect);
             
             GUI.Label(_stateLabelRect, $"State : {_characterStateMachine.CurrentState.ToString()}", _textStyle);
-            GUI.Label(_chargeLabelRect, $"Charge : {_chargeStat.Value}", _textStyle);
+            GUI.Label(_chargeLabelRect, $"Charge : {_chargeStat.Value} / {_capacityStat.Value}", _textStyle);
             GUI.Label(_inventoryLabelRect, "Inventory : ", _textStyle);
             var inventoryIndex = 0;
             foreach (var collectionType in _inventoryModelsMap.Keys)

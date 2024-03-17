@@ -11,6 +11,7 @@ namespace Core.GameSystems.AbilitySystem.Model
     {
         private bool _isInitialized;
         private IStatModel _chargeStatModel;
+        private IStatModel _batteryCapacityModel;
         
         public AbilityData Data { get; private set; }
         public bool IsAvailable { get; private set; }
@@ -21,7 +22,8 @@ namespace Core.GameSystems.AbilitySystem.Model
         [Inject]
         private void Construct(CharacterStatsSystem statsSystem)
         {
-            _chargeStatModel = statsSystem.GetStatModel(StatType.Charge);
+            _chargeStatModel = statsSystem.GetStatModel(StatId.BatteryCharge);
+            _batteryCapacityModel = statsSystem.GetStatModel(StatId.BatteryCapacity);
         }
         
         public void Initialize(AbilityData data)
@@ -33,8 +35,9 @@ namespace Core.GameSystems.AbilitySystem.Model
             
             Data = data;
             IsAvailable = true;
-            IsReady = _chargeStatModel.Value < _chargeStatModel.MaxValue;
+            IsReady = _chargeStatModel.Value < _batteryCapacityModel.Value;
             _chargeStatModel.OnValueChanged += ChargeValueChanged;
+            _batteryCapacityModel.OnValueChanged += ChargeValueChanged;
         }
         
         public void Dispose()
@@ -43,12 +46,13 @@ namespace Core.GameSystems.AbilitySystem.Model
                 return;
             
             _chargeStatModel.OnValueChanged -= ChargeValueChanged;
+            _batteryCapacityModel.OnValueChanged -= ChargeValueChanged;
         }
 
         private void ChargeValueChanged()
         {
             var isReadyPrevious = IsReady;
-            IsReady = _chargeStatModel.Value < _chargeStatModel.MaxValue;
+            IsReady = _chargeStatModel.Value < _batteryCapacityModel.Value;
             
             if (IsReady != isReadyPrevious)
                 OnReadyChanged?.Invoke(this);

@@ -21,7 +21,7 @@ namespace Core.GameSystems.AbilitySystem.Model
         [Inject]
         private void Construct(CharacterStatsSystem statsSystem)
         {
-            _chargeStatModel = statsSystem.GetStatModel(StatType.Charge);
+            _chargeStatModel = statsSystem.GetStatModel(StatId.BatteryCharge);
         }
 
         public void Initialize(AbilityData data)

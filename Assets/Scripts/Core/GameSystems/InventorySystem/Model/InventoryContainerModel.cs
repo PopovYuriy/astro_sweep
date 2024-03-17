@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.GameSystems.InventorySystem.Data;
+using Core.GameSystems.InventorySystem.Enums;
+using UnityEngine;
 
 namespace Core.GameSystems.InventorySystem.Model
 {
@@ -42,19 +44,21 @@ namespace Core.GameSystems.InventorySystem.Model
             return true;
         }
 
-        public bool TryPullItem(ItemData itemData)
+        public void PullItems(ItemType itemType, int count)
         {
-            var itemModel = _items.FirstOrDefault(model => model.Data.ItemType == itemData.ItemType);
+            var itemModel = _items.FirstOrDefault(model => model.Data.ItemType == itemType);
             if (itemModel == null)
-                return false;
+            {
+                Debug.LogError($"Item with type {itemType} has not found.");
+                return;
+            }
             
-            itemModel.PullItem();
-
+            itemModel.PullItems(count);
+            
             if (itemModel.Count == 0)
                 _items.Remove(itemModel);
             
             OnItemPulled?.Invoke(itemModel);
-            return true;
         }
 
         public ItemData GetItem(int index)

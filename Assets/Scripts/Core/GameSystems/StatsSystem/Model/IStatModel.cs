@@ -9,10 +9,10 @@ namespace Core.GameSystems.StatsSystem.Model
     {
         event Action OnValueChanged;
         
-        StatType Type { get; }
+        StatId Id { get; }
         float Value { get; }
-        float MaxValue { get; }
 
+        void UpdateBaseValue(float value);
         void ApplyPermanentModifier(IStatModifier modifier);
         void AddModifier(IStatModifier modifier);
         void RemoveModifier(IStatModifier modifier);

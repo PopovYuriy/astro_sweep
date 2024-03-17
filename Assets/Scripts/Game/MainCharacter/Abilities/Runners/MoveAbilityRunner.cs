@@ -6,10 +6,7 @@ namespace Game.MainCharacter.Abilities.Runners
 {
     public sealed class MoveAbilityRunner : AbilityRunnerAbstract<MovingAbilityModel>
     {
-        [SerializeField] private float _moveSpeed;
         [SerializeField] private float _moveAccelerationDuration;
-        
-        [SerializeField] private float _rotationSpeed;
         [SerializeField] private float _rotationAccelerationDuration;
 
         [SerializeField] private CharacterController _characterController;
@@ -37,12 +34,13 @@ namespace Game.MainCharacter.Abilities.Runners
             
             if (Model.MoveDirection.y != 0f)
             {
-                if (_currentSpeed < _moveSpeed)
+                if (_currentSpeed < Model.MoveSpeed)
                 {
                     KillSpeedTween();
                     _speedTween = DOTween.To(() => _currentSpeed, 
                         speed => _currentSpeed = speed, 
-                        _moveSpeed, _moveAccelerationDuration * (1 - _currentSpeed / _moveSpeed));
+                        Model.MoveSpeed, 
+                        _moveAccelerationDuration * (1 - _currentSpeed / Model.MoveSpeed));
                 }
                 
                 Move(Model.MoveDirection.y);
@@ -54,13 +52,13 @@ namespace Game.MainCharacter.Abilities.Runners
             
             if (Model.MoveDirection.x != 0f)
             {
-                if (_currentRotationSpeed < _rotationSpeed)
+                if (_currentRotationSpeed < Model.RotationSpeed)
                 {
                     KillRotationSpeedTween();
                     _rotationSpeedTween = DOTween.To(() => _currentRotationSpeed, 
                         speed => _currentRotationSpeed = speed,
-                        _rotationSpeed, 
-                        _rotationAccelerationDuration * (1 - _currentRotationSpeed / _rotationSpeed));
+                        Model.RotationSpeed, 
+                        _rotationAccelerationDuration * (1 - _currentRotationSpeed / Model.RotationSpeed));
                 }
                 
                 Rotate(Model.MoveDirection.x);
